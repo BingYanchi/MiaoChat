@@ -4,6 +4,8 @@ main: ${project.groupId}.${project.artifactId}.${project.artifactId}
 version: ${project.version}-git-${env.GIT_COMMIT}
 author: 喵♂呜
 website: ${ciManagement.url}
+depend:
+- PlaceholderAPI
 commands:
   ${project.artifactId}:
     description: ${project.artifactId} - ${project.description}
