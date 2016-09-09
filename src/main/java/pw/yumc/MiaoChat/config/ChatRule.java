@@ -1,7 +1,10 @@
 package pw.yumc.MiaoChat.config;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
+import pw.yumc.YumCore.config.Default;
+import pw.yumc.YumCore.config.FileConfig;
 import pw.yumc.YumCore.config.InjectConfigurationSection;
 
 /**
@@ -11,41 +14,60 @@ import pw.yumc.YumCore.config.InjectConfigurationSection;
  * @author 喵♂呜
  */
 public class ChatRule extends InjectConfigurationSection {
+    private transient String name;
+    @Default("50")
     private Integer index;
     private String permission;
+    @Default("0")
     private Integer range;
-    private boolean item;
+    @Default("false")
+    private Boolean item;
+    @Default("&6[%s&6]&r")
+    private String itemformat;
+    private transient ChatConfig formats;
 
-    public ChatRule(final ConfigurationSection config) {
+    public ChatRule(final String name, final ConfigurationSection config) {
         super(config);
+        this.name = name;
+        if (permission == null) {
+            permission = String.format("MiaoChat.%s", name);
+        }
+        formats = new ChatConfig(new FileConfig(name + ".yml"));
     }
 
-    /**
-     * @return the index
-     */
+    public boolean check(final Player player) {
+        return player.hasPermission(permission);
+    }
+
+    public ChatConfig getFormats() {
+        return formats;
+    }
+
     public Integer getIndex() {
         return index;
     }
 
-    /**
-     * @return the permission
-     */
+    public Boolean getItem() {
+        return item;
+    }
+
+    public String getItemformat() {
+        return itemformat;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public String getPermission() {
         return permission;
     }
 
-    /**
-     * @return the range
-     */
     public Integer getRange() {
         return range;
     }
 
-    /**
-     * @return the item
-     */
     public boolean isItem() {
         return item;
     }
-
 }

@@ -8,14 +8,18 @@ import org.bukkit.entity.Player;
 import me.clip.placeholderapi.PlaceholderAPI;
 import pw.yumc.YumCore.config.ConfigNode;
 import pw.yumc.YumCore.config.InjectConfigurationSection;
+import pw.yumc.YumCore.config.Nullable;
 import pw.yumc.YumCore.tellraw.Tellraw;
 
 public class ChatMessagePart extends InjectConfigurationSection {
     private String text;
+    @Nullable
     private List<String> tip;
+    @Nullable
     @ConfigNode("click.type")
     private String typestring;
     private transient CLICKTYPE type = CLICKTYPE.SUGGEST;
+    @Nullable
     @ConfigNode("click.command")
     private String command;
 

@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import pw.yumc.MiaoChat.config.Config;
 import pw.yumc.MiaoChat.listeners.ChatListener;
+import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.commands.CommandArgument;
 import pw.yumc.YumCore.commands.CommandExecutor;
 import pw.yumc.YumCore.commands.CommandManager;
@@ -25,6 +26,20 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
         return config;
     }
 
+    @Cmd(permission = "MiaoChat.toggle")
+    @Help("关闭聊天功能")
+    public void off(final CommandArgument e) {
+        ChatListener.offList.remove(e.getSender().getName());
+        Log.toSender(e.getSender(), "§c聊天功能已关闭!");
+    }
+
+    @Cmd(permission = "MiaoChat.toggle")
+    @Help("开启聊天功能")
+    public void on(final CommandArgument e) {
+        ChatListener.offList.add(e.getSender().getName());
+        Log.toSender(e.getSender(), "§a聊天功能已开启!");
+    }
+
     @Override
     public void onEnable() {
         new ChatListener();
@@ -34,6 +49,7 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
     @Override
     public void onLoad() {
         cfg = new FileConfig();
+        config = new Config();
     }
 
     @Cmd(permission = "MiaoChat.reload")
@@ -41,6 +57,6 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
     public void reload(final CommandArgument e) {
         cfg.reload();
         config.reload();
-        e.getSender().sendMessage("§a配置文件已重载!");
+        Log.toSender(e.getSender(), "§a配置文件已重载!");
     }
 }

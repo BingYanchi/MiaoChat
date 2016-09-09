@@ -7,6 +7,7 @@ import pw.yumc.YumCore.config.FileConfig;
 
 public class ChatConfig {
     private static String PrefixKey = "Format.Prefix";
+    private static String PlayerKey = "Format.Player";
     private static String SuffixKey = "Format.Suffix";
     private final FileConfig config;
     private final List<ChatMessagePart> prefixs;
@@ -39,7 +40,9 @@ public class ChatConfig {
                 prefixs.add(new ChatMessagePart(config.getConfigurationSection(PrefixKey + "." + part)));
             }
         }
-        player = new ChatMessagePart(config.getConfigurationSection("Format.Player"));
+        if (config.isSet(PlayerKey)) {
+            player = new ChatMessagePart(config.getConfigurationSection(PlayerKey));
+        }
         suffixs.clear();
         if (config.isSet(SuffixKey)) {
             for (final String part : config.getConfigurationSection(SuffixKey).getKeys(false)) {
