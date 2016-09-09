@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +42,7 @@ public class ChatListener implements Listener {
         new SubscribeTask(true, true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onChat(final AsyncPlayerChatEvent e) {
         final Player p = e.getPlayer();
         final ChatRule cr = plugin.getConfigExt().getChatRule(e.getPlayer());
@@ -78,6 +79,7 @@ public class ChatListener implements Listener {
                 tr.send(ne);
             }
         }
+        Bukkit.getConsoleSender().sendMessage(tr.toOldMessageFormat());
     }
 
     private LinkedList<String> handlerMessage(final LinkedList<String> il, String message) {
