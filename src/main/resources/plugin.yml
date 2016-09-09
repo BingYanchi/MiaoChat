@@ -16,8 +16,8 @@ commands:
     permission: ${project.artifactId}.reload
     permission-message: §c你没有 <permission> 的权限来执行此命令!
 permissions:
-  ${project.artifactId}.use:
-    description: ${project.artifactId} 使用!
+  ${project.artifactId}.default:
+    description: 默认格式权限!
     default: true
   ${project.artifactId}.reload:
     description: 重新载入插件!

@@ -3,7 +3,6 @@ package pw.yumc.MiaoChat.config;
 import java.util.LinkedList;
 import java.util.List;
 
-import pw.yumc.YumCore.bukkit.P;
 import pw.yumc.YumCore.config.FileConfig;
 
 public class ChatConfig {
@@ -14,8 +13,8 @@ public class ChatConfig {
     private final List<ChatMessagePart> suffixs;
     private ChatMessagePart player;
 
-    public ChatConfig() {
-        config = P.getConfig();
+    public ChatConfig(final FileConfig cfg) {
+        config = cfg;
         prefixs = new LinkedList<>();
         suffixs = new LinkedList<>();
         reload();

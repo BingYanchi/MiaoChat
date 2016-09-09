@@ -26,9 +26,12 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onChat(final AsyncPlayerChatEvent e) {
-        e.setCancelled(true);
         final Player p = e.getPlayer();
-        final ChatConfig cc = plugin.getChatConfig();
+        final ChatConfig cc = plugin.getConfigExt().getChatConfig(e.getPlayer());
+        if (cc == null) {
+            return;
+        }
+        e.setCancelled(true);
         final String msg = e.getMessage();
         final Tellraw tr = Tellraw.create();
         for (final ChatMessagePart cmp : cc.getPrefixs()) {
