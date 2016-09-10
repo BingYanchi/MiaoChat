@@ -18,10 +18,10 @@ public class ChatMessagePart extends InjectConfigurationSection {
     @Nullable
     @ConfigNode("click.type")
     private String typestring;
-    private transient CLICKTYPE type = CLICKTYPE.SUGGEST;
     @Nullable
     @ConfigNode("click.command")
     private String command;
+    private transient CLICKTYPE type = CLICKTYPE.SUGGEST;
 
     public ChatMessagePart(final ConfigurationSection config) {
         super(config);

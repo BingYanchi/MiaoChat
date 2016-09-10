@@ -11,6 +11,8 @@ Formats:
     permission: 'MiaoChat.default'
     #范围(0为无限制)
     range: 0
+    #聊天格式(#xxx会调用format.yml下的对应格式)
+    format: '#world#player: '
     #解析物品(%i=>手上物品,%0-9快捷栏对应物品)
     item: true
     #物品解析规则
@@ -21,6 +23,8 @@ Formats:
     index: 49
     #权限
     permission: 'MiaoChat.admin'
+    #聊天格式(#xxx会调用format.yml下的对应格式)
+    format: '#admin#world#player#help: '
     #范围(0为无限制)
     range: 0
     #解析物品(%i=>手上物品,%0-9快捷栏对应物品)

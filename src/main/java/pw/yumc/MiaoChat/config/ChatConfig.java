@@ -1,53 +1,28 @@
 package pw.yumc.MiaoChat.config;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import pw.yumc.YumCore.config.FileConfig;
 
 public class ChatConfig {
-    private static String PrefixKey = "Format.Prefix";
-    private static String PlayerKey = "Format.Player";
-    private static String SuffixKey = "Format.Suffix";
     private final FileConfig config;
-    private final List<ChatMessagePart> prefixs;
-    private final List<ChatMessagePart> suffixs;
-    private ChatMessagePart player;
+    private final Map<String, ChatMessagePart> formats;
 
     public ChatConfig(final FileConfig cfg) {
         config = cfg;
-        prefixs = new LinkedList<>();
-        suffixs = new LinkedList<>();
+        formats = new HashMap<>();
         reload();
     }
 
-    public ChatMessagePart getPlayer() {
-        return player;
-    }
-
-    public List<ChatMessagePart> getPrefixs() {
-        return prefixs;
-    }
-
-    public List<ChatMessagePart> getSuffixs() {
-        return suffixs;
+    public ChatMessagePart getFormat(final String name) {
+        return formats.get(name);
     }
 
     public void reload() {
-        prefixs.clear();
-        if (config.isSet(PrefixKey)) {
-            for (final String part : config.getConfigurationSection(PrefixKey).getKeys(false)) {
-                prefixs.add(new ChatMessagePart(config.getConfigurationSection(PrefixKey + "." + part)));
-            }
-        }
-        if (config.isSet(PlayerKey)) {
-            player = new ChatMessagePart(config.getConfigurationSection(PlayerKey));
-        }
-        suffixs.clear();
-        if (config.isSet(SuffixKey)) {
-            for (final String part : config.getConfigurationSection(SuffixKey).getKeys(false)) {
-                suffixs.add(new ChatMessagePart(config.getConfigurationSection(SuffixKey + "." + part)));
-            }
+        formats.clear();
+        for (final String name : config.getKeys(false)) {
+            formats.put(name, new ChatMessagePart(config.getConfigurationSection(name)));
         }
     }
 }

@@ -1,10 +1,13 @@
 package pw.yumc.MiaoChat.config;
 
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import pw.yumc.YumCore.config.Default;
-import pw.yumc.YumCore.config.FileConfig;
 import pw.yumc.YumCore.config.InjectConfigurationSection;
 
 /**
@@ -14,17 +17,21 @@ import pw.yumc.YumCore.config.InjectConfigurationSection;
  * @author 喵♂呜
  */
 public class ChatRule extends InjectConfigurationSection {
+    private transient static final Pattern FORMAT_PATTERN = Pattern.compile("[#]([^#]+)[#]");
     private transient String name;
     @Default("50")
     private Integer index;
+    @Default("MiaoChat.default")
     private String permission;
+    @Default("#world#player: ")
+    private String format;
     @Default("0")
     private Integer range;
     @Default("false")
     private Boolean item;
     @Default("&6[&b%s&6]&r")
     private String itemformat;
-    private transient ChatConfig formats;
+    private transient LinkedList<String> formats;
 
     public ChatRule(final String name, final ConfigurationSection config) {
         super(config);
@@ -32,14 +39,22 @@ public class ChatRule extends InjectConfigurationSection {
         if (permission == null) {
             permission = String.format("MiaoChat.%s", name);
         }
-        formats = new ChatConfig(new FileConfig(name + ".yml"));
+        formats = new LinkedList<>();
+        final Matcher m = FORMAT_PATTERN.matcher(format);
+        while (m.find()) {
+            formats.add(m.group(1));
+        }
     }
 
     public boolean check(final Player player) {
         return player.hasPermission(permission);
     }
 
-    public ChatConfig getFormats() {
+    public String getFormat() {
+        return format;
+    }
+
+    public LinkedList<String> getFormats() {
         return formats;
     }
 

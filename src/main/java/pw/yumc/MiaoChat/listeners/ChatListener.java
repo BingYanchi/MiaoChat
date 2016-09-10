@@ -20,8 +20,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 
 import pw.yumc.MiaoChat.MiaoChat;
-import pw.yumc.MiaoChat.config.ChatConfig;
-import pw.yumc.MiaoChat.config.ChatMessagePart;
 import pw.yumc.MiaoChat.config.ChatRule;
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.bukkit.P;
@@ -61,13 +59,9 @@ public class ChatListener implements Listener {
     }
 
     private void handleFormat(final Player p, final Tellraw tr, final ChatRule cr) {
-        final ChatConfig cc = cr.getFormats();
-        for (final ChatMessagePart cmp : cc.getPrefixs()) {
-            cmp.then(tr, p);
-        }
-        cc.getPlayer().then(tr, p);
-        for (final ChatMessagePart cmp : cc.getSuffixs()) {
-            cmp.then(tr, p);
+        final LinkedList<String> formats = cr.getFormats();
+        for (final String format : formats) {
+
         }
     }
 
