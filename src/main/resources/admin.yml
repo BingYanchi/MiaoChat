@@ -17,11 +17,12 @@ Format:
       - '&c点击即可TP我!'
       #点击操作
       click:
-        #操作类型: [COMMAND,SUGGEST] 
+        #操作类型: [COMMAND,SUGGEST,OPENURL] 
         #COMMAND代表执行命令
         #SUGGEST代表命令补全
+        #OPENURL代表打开网址
         type: 'COMMAND'
-        #命令 支持PAPI
+        #命令或网址 支持PAPI
         command: '/tpa %player_name%'
 #    可以添加多个
 #    2:

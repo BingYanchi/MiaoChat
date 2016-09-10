@@ -13,18 +13,21 @@ commands:
     - mct
     - mchat
     usage: §b使用/${project.artifactId} help 查看帮助!
-    permission: ${project.artifactId}.reload
+    permission: ${project.artifactId}.default
     permission-message: §c你没有 <permission> 的权限来执行此命令!
 permissions:
   ${project.artifactId}.default:
     description: 默认格式权限!
     default: true
-  ${project.artifactId}.admin:
-    description: 管理员格式权限!
-    default: op
   ${project.artifactId}.toggle:
     description: 开启关闭聊天!
     default: true
+  ${project.artifactId}.color:
+    description: 彩字聊天权限!
+    default: true
+  ${project.artifactId}.admin:
+    description: 管理员格式权限!
+    default: op
   ${project.artifactId}.reload:
     description: 重新载入插件!
     default: op

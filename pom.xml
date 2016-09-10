@@ -65,7 +65,6 @@
 						</goals>
 						<configuration>
 							<options>
-								<option>-repackageclasses nul.${project.groupId}.for.${project.artifactId}.class</option>
 								<option>-keep class ${project.groupId}.${project.artifactId}.${project.artifactId}</option>
 							</options>
 							<libs>

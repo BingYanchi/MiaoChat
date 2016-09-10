@@ -42,17 +42,26 @@ public class ChatListener implements Listener {
         new SubscribeTask(true, true);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChat(final AsyncPlayerChatEvent e) {
         final Player p = e.getPlayer();
         final ChatRule cr = plugin.getConfigExt().getChatRule(e.getPlayer());
         if (cr == null) {
             return;
         }
-        final ChatConfig cc = cr.getFormats();
         e.setCancelled(true);
-        final String msg = e.getMessage();
         final Tellraw tr = Tellraw.create();
+        handleChat(p, tr, cr, e);
+    }
+
+    private void handleChat(final Player p, final Tellraw tr, final ChatRule cr, final AsyncPlayerChatEvent e) {
+        handleFormat(p, tr, cr);
+        handleTellraw(p, tr, cr, e.getMessage());
+        handleSend(p, tr, cr);
+    }
+
+    private void handleFormat(final Player p, final Tellraw tr, final ChatRule cr) {
+        final ChatConfig cc = cr.getFormats();
         for (final ChatMessagePart cmp : cc.getPrefixs()) {
             cmp.then(tr, p);
         }
@@ -60,29 +69,9 @@ public class ChatListener implements Listener {
         for (final ChatMessagePart cmp : cc.getSuffixs()) {
             cmp.then(tr, p);
         }
-        final String message = ChatColor.translateAlternateColorCodes('&', msg);
-        if (!message.isEmpty() && cr.isItem()) {
-            if (!handlerTellraw(p, tr, message, cr.getItemformat())) {
-                Log.toSender(p, "§c不允许展示相同的物品!");
-                return;
-            }
-        }
-        final int range = cr.getRange();
-        Collection<? extends Entity> plist = Collections.emptyList();
-        if (range != 0) {
-            plist = p.getNearbyEntities(range, range, range);
-        } else {
-            plist = C.Player.getOnlinePlayers();
-        }
-        for (final Entity ne : plist) {
-            if (ne instanceof Player && !offList.contains(ne.getName())) {
-                tr.send(ne);
-            }
-        }
-        Bukkit.getConsoleSender().sendMessage(tr.toOldMessageFormat());
     }
 
-    private LinkedList<String> handlerMessage(final LinkedList<String> il, String message) {
+    private LinkedList<String> handleMessage(final LinkedList<String> il, String message) {
         final LinkedList<String> mlist = new LinkedList<>();
         if (!il.isEmpty()) {
             for (final String k : il) {
@@ -98,7 +87,7 @@ public class ChatListener implements Listener {
         return mlist;
     }
 
-    private LinkedList<String> handlerPattern(final String message) {
+    private LinkedList<String> handlePattern(final String message) {
         final Matcher m = ITEM_PATTERN.matcher(message);
         final Set<String> temp = new HashSet<>();
         final LinkedList<String> ilist = new LinkedList<>();
@@ -115,12 +104,35 @@ public class ChatListener implements Listener {
         return ilist;
     }
 
-    private boolean handlerTellraw(final Player player, final Tellraw tr, final String message, final String itemformat) {
-        final LinkedList<String> il = handlerPattern(message);
-        if (il == null) {
-            return false;
+    private void handleSend(final Player p, final Tellraw tr, final ChatRule cr) {
+        final int range = cr.getRange();
+        Collection<? extends Entity> plist = Collections.emptyList();
+        if (range != 0) {
+            plist = p.getNearbyEntities(range, range, range);
+        } else {
+            plist = C.Player.getOnlinePlayers();
         }
-        final LinkedList<String> ml = handlerMessage(il, message);
+        for (final Entity ne : plist) {
+            if (ne instanceof Player && !offList.contains(ne.getName())) {
+                tr.send(ne);
+            }
+        }
+        Bukkit.getConsoleSender().sendMessage(tr.toOldMessageFormat());
+    }
+
+    private void handleTellraw(final Player player, final Tellraw tr, final ChatRule cr, String message) {
+        if (message.isEmpty() || !cr.isItem()) {
+            return;
+        }
+        if (player.hasPermission("MiaoChat.color")) {
+            message = ChatColor.translateAlternateColorCodes('&', message);
+        }
+        final LinkedList<String> il = handlePattern(message);
+        if (il == null) {
+            Log.toSender(player, "§c不允许展示相同的物品!");
+            return;
+        }
+        final LinkedList<String> ml = handleMessage(il, message);
         while (!ml.isEmpty()) {
             final String mm = ml.removeFirst();
             if (il.contains(mm)) {
@@ -132,14 +144,12 @@ public class ChatListener implements Listener {
                     is = player.getInventory().getItem(k - '0' - 1);
                 }
                 if (is != null && is.getType() != Material.AIR) {
-                    tr.then(String.format(ChatColor.translateAlternateColorCodes('&', itemformat),
-                            is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : is.getType().name()));
+                    tr.then(String.format(ChatColor.translateAlternateColorCodes('&', cr.getItemformat()), is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : is.getType().name()));
                     tr.item(is);
                 }
             } else {
                 tr.then(mm);
             }
         }
-        return true;
     }
 }

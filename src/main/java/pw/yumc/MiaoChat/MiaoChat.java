@@ -29,14 +29,14 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
     @Cmd(permission = "MiaoChat.toggle")
     @Help("关闭聊天功能")
     public void off(final CommandArgument e) {
-        ChatListener.offList.remove(e.getSender().getName());
+        ChatListener.offList.add(e.getSender().getName());
         Log.toSender(e.getSender(), "§c聊天功能已关闭!");
     }
 
     @Cmd(permission = "MiaoChat.toggle")
     @Help("开启聊天功能")
     public void on(final CommandArgument e) {
-        ChatListener.offList.add(e.getSender().getName());
+        ChatListener.offList.remove(e.getSender().getName());
         Log.toSender(e.getSender(), "§a聊天功能已开启!");
     }
 

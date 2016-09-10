@@ -37,10 +37,19 @@ public class ChatMessagePart extends InjectConfigurationSection {
         }
         if (command != null && !command.isEmpty()) {
             final String tc = f(p, command);
-            if (type == CLICKTYPE.SUGGEST) {
-                tr.suggest(tc);
-            } else if (type == CLICKTYPE.COMMAND) {
+            switch (type) {
+            case COMMAND:
                 tr.command(tc);
+                break;
+            case OPENURL:
+                tr.openurl(tc);
+                break;
+            case SUGGEST:
+                tr.suggest(tc);
+                break;
+            default:
+                break;
+
             }
         }
         return tr;

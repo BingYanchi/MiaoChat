@@ -22,7 +22,7 @@ public class ChatRule extends InjectConfigurationSection {
     private Integer range;
     @Default("false")
     private Boolean item;
-    @Default("&6[%s&6]&r")
+    @Default("&6[&b%s&6]&r")
     private String itemformat;
     private transient ChatConfig formats;
 
