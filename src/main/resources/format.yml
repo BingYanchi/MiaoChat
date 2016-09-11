@@ -19,7 +19,7 @@ world:
     #命令或网址 支持PAPI
     command: '/tpa %player_name%'
 player: 
-  text: '&b%player_name%: '
+  text: '&b%player_name%'
   tip: 
   - '&6玩家名称: &b%player_name%'
   - '&6玩家等级: &a%player_level%'
@@ -34,7 +34,7 @@ player:
 admin:
   text: '&6[&c管理员&6]'
 help:
-  text: '&4[求助]&r '
+  text: '&4[求助]'
   tip: 
   - '点击求助OP'
   click: 

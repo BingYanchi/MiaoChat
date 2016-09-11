@@ -1,9 +1,11 @@
 package pw.yumc.MiaoChat;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import pw.yumc.MiaoChat.config.Config;
+import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.listeners.ChatListener;
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.commands.CommandArgument;
@@ -12,18 +14,19 @@ import pw.yumc.YumCore.commands.CommandManager;
 import pw.yumc.YumCore.commands.annotation.Cmd;
 import pw.yumc.YumCore.commands.annotation.Help;
 import pw.yumc.YumCore.config.FileConfig;
+import pw.yumc.YumCore.misc.L10N;
 
 public class MiaoChat extends JavaPlugin implements CommandExecutor {
     private FileConfig cfg;
-    private Config config;
+    private ChatConfig chatConfig;
+
+    public ChatConfig getChatConfig() {
+        return chatConfig;
+    }
 
     @Override
     public FileConfiguration getConfig() {
         return cfg;
-    }
-
-    public Config getConfigExt() {
-        return config;
     }
 
     @Cmd(permission = "MiaoChat.toggle")
@@ -44,19 +47,20 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
     public void onEnable() {
         new ChatListener();
         new CommandManager("MiaoChat", this);
+        L10N.getItemFullName(new ItemStack(Material.DIAMOND_SWORD));
     }
 
     @Override
     public void onLoad() {
         cfg = new FileConfig();
-        config = new Config();
+        chatConfig = new ChatConfig();
     }
 
     @Cmd(permission = "MiaoChat.reload")
     @Help("重载配置文件")
     public void reload(final CommandArgument e) {
         cfg.reload();
-        config.reload();
+        chatConfig.reload();
         Log.toSender(e.getSender(), "§a配置文件已重载!");
     }
 }

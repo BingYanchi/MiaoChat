@@ -17,13 +17,13 @@ import pw.yumc.YumCore.config.InjectConfigurationSection;
  * @author 喵♂呜
  */
 public class ChatRule extends InjectConfigurationSection {
-    private transient static final Pattern FORMAT_PATTERN = Pattern.compile("[#]([^#]+)[#]");
+    private transient static final Pattern FORMAT_PATTERN = Pattern.compile("[\\[]([^\\[\\]]+)[\\]]");
     private transient String name;
     @Default("50")
     private Integer index;
     @Default("MiaoChat.default")
     private String permission;
-    @Default("#world#player: ")
+    @Default("#world##player#: ")
     private String format;
     @Default("0")
     private Integer range;
@@ -40,10 +40,7 @@ public class ChatRule extends InjectConfigurationSection {
             permission = String.format("MiaoChat.%s", name);
         }
         formats = new LinkedList<>();
-        final Matcher m = FORMAT_PATTERN.matcher(format);
-        while (m.find()) {
-            formats.add(m.group(1));
-        }
+        load();
     }
 
     public boolean check(final Player player) {
@@ -84,5 +81,25 @@ public class ChatRule extends InjectConfigurationSection {
 
     public boolean isItem() {
         return item;
+    }
+
+    private void load() {
+        final Matcher m = FORMAT_PATTERN.matcher(format);
+        final LinkedList<String> temp = new LinkedList<>();
+        while (m.find()) {
+            temp.add(m.group(1));
+        }
+        String tempvar = format;
+        if (!temp.isEmpty()) {
+            for (final String var : temp) {
+                final String[] args = tempvar.split("\\[" + var + "\\]", 2);
+                formats.add(args[0]);
+                formats.add(var);
+                tempvar = args[1];
+            }
+            if (!tempvar.isEmpty()) {
+                formats.add(tempvar);
+            }
+        }
     }
 }

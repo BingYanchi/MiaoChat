@@ -20,19 +20,23 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 
 import pw.yumc.MiaoChat.MiaoChat;
+import pw.yumc.MiaoChat.config.ChatConfig;
+import pw.yumc.MiaoChat.config.ChatMessagePart;
 import pw.yumc.MiaoChat.config.ChatRule;
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.bukkit.P;
 import pw.yumc.YumCore.bukkit.compatible.C;
+import pw.yumc.YumCore.misc.L10N;
 import pw.yumc.YumCore.statistic.Statistics;
 import pw.yumc.YumCore.tellraw.Tellraw;
 import pw.yumc.YumCore.update.SubscribeTask;
 
 public class ChatListener implements Listener {
     public static Set<String> offList = new HashSet<>();
-    static final Pattern ITEM_PATTERN = Pattern.compile("%([i1-9]?)");
+    private static final Pattern ITEM_PATTERN = Pattern.compile("%([i1-9]?)");
 
-    MiaoChat plugin = P.getPlugin();
+    private final MiaoChat plugin = P.getPlugin();
+    private final ChatConfig cc = plugin.getChatConfig();
 
     public ChatListener() {
         Bukkit.getPluginManager().registerEvents(this, P.instance);
@@ -43,7 +47,7 @@ public class ChatListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChat(final AsyncPlayerChatEvent e) {
         final Player p = e.getPlayer();
-        final ChatRule cr = plugin.getConfigExt().getChatRule(e.getPlayer());
+        final ChatRule cr = cc.getChatRule(e.getPlayer());
         if (cr == null) {
             return;
         }
@@ -61,7 +65,12 @@ public class ChatListener implements Listener {
     private void handleFormat(final Player p, final Tellraw tr, final ChatRule cr) {
         final LinkedList<String> formats = cr.getFormats();
         for (final String format : formats) {
-
+            final ChatMessagePart cmp = cc.getFormat(format);
+            if (cmp != null) {
+                cmp.then(tr, p);
+            } else {
+                tr.then(format);
+            }
         }
     }
 
@@ -103,6 +112,7 @@ public class ChatListener implements Listener {
         Collection<? extends Entity> plist = Collections.emptyList();
         if (range != 0) {
             plist = p.getNearbyEntities(range, range, range);
+            tr.send(p);
         } else {
             plist = C.Player.getOnlinePlayers();
         }
@@ -130,15 +140,10 @@ public class ChatListener implements Listener {
         while (!ml.isEmpty()) {
             final String mm = ml.removeFirst();
             if (il.contains(mm)) {
-                ItemStack is = null;
                 final char k = mm.charAt(1);
-                if (k == 'i') {
-                    is = player.getItemInHand();
-                } else {
-                    is = player.getInventory().getItem(k - '0' - 1);
-                }
+                final ItemStack is = k == 'i' ? player.getItemInHand() : player.getInventory().getItem(k - '0' - 1);
                 if (is != null && is.getType() != Material.AIR) {
-                    tr.then(String.format(ChatColor.translateAlternateColorCodes('&', cr.getItemformat()), is.hasItemMeta() && is.getItemMeta().hasDisplayName() ? is.getItemMeta().getDisplayName() : is.getType().name()));
+                    tr.then(String.format(ChatColor.translateAlternateColorCodes('&', cr.getItemformat()), L10N.getItemName(is)));
                     tr.item(is);
                 }
             } else {
