@@ -93,7 +93,9 @@ public class ChatRule extends InjectConfigurationSection {
         if (!temp.isEmpty()) {
             for (final String var : temp) {
                 final String[] args = tempvar.split("\\[" + var + "\\]", 2);
-                formats.add(args[0]);
+                if (!"".equals(args[0])) {
+                    formats.add(args[0]);
+                }
                 formats.add(var);
                 tempvar = args[1];
             }

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -22,7 +21,7 @@ public class ChatConfig {
     private static final String F = "Formats";
     private final Map<String, ChatMessagePart> formats;
     private final RuleComparator rulecomp;
-    private final List<ChatRule> rules;
+    private final LinkedList<ChatRule> rules;
     private final FileConfig config;
     private final FileConfig format;
 
@@ -32,7 +31,7 @@ public class ChatConfig {
         rulecomp = new RuleComparator();
         formats = new HashMap<>();
         rules = new LinkedList<>();
-        reload();
+        load();
     }
 
     /**
@@ -55,19 +54,25 @@ public class ChatConfig {
         return formats.get(name);
     }
 
-    public void reload() {
-        format.reload();
+    public void load() {
         formats.clear();
         for (final String name : format.getKeys(false)) {
             formats.put(name, new ChatMessagePart(format.getConfigurationSection(name)));
+            Log.d("载入聊天格式: %s", name);
         }
         rules.clear();
         if (config.isSet(F)) {
             for (final String rule : config.getConfigurationSection(F).getKeys(false)) {
                 rules.add(new ChatRule(rule, config.getConfigurationSection(F + "." + rule)));
+                Log.d("载入聊天规则: %s => \"%s\"", rule, rules.getLast().getFormat());
             }
         }
         Collections.sort(rules, rulecomp);
+    }
+
+    public void reload() {
+        format.reload();
+        load();
     }
 
     private class RuleComparator implements Comparator<ChatRule> {
