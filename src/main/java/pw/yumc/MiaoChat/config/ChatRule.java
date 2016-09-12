@@ -23,7 +23,7 @@ public class ChatRule extends InjectConfigurationSection {
     private Integer index;
     @Default("MiaoChat.default")
     private String permission;
-    @Default("#world##player#: ")
+    @Default("[world][player]: ")
     private String format;
     @Default("0")
     private Integer range;

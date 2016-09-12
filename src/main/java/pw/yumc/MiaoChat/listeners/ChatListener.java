@@ -117,7 +117,7 @@ public class ChatListener implements Listener {
             plist = C.Player.getOnlinePlayers();
         }
         for (final Entity ne : plist) {
-            if (ne instanceof Player && !offList.contains(ne.getName())) {
+            if (ne instanceof Player && !offList.contains(((Player) ne).getName())) {
                 tr.send(ne);
             }
         }
