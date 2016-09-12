@@ -56,6 +56,7 @@ public class ChatConfig {
     }
 
     public void reload() {
+        format.reload();
         formats.clear();
         for (final String name : format.getKeys(false)) {
             formats.put(name, new ChatMessagePart(format.getConfigurationSection(name)));
