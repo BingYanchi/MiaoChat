@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import pw.yumc.MiaoChat.MiaoChat;
 import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.config.ChatMessagePart;
@@ -74,7 +75,7 @@ public class ChatListener implements Listener {
                 cmp.then(tr, p);
             } else {
                 // Log.d("追加文本: %s", format);
-                tr.then(format);
+                tr.then(PlaceholderAPI.setPlaceholders(p, format));
             }
         }
     }
