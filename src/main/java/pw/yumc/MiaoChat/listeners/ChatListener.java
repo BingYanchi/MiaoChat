@@ -162,7 +162,7 @@ public class ChatListener implements Listener {
                 final ItemStack is = k == 'i' ? player.getItemInHand() : player.getInventory().getItem(k - '0' - 1);
                 if (is != null && is.getType() != Material.AIR) {
                     // Log.d("处理物品: %s", mm);
-                    tr.then(String.format(ChatColor.translateAlternateColorCodes('&', cr.getItemformat()), L10N.getItemName(is)));
+                    tr.then(String.format(ChatColor.translateAlternateColorCodes('&', cr.getItemformat()), L10N.getName(is)));
                     tr.item(is);
                 }
             } else {

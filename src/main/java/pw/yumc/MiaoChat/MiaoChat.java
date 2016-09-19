@@ -47,7 +47,7 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
     public void onEnable() {
         new ChatListener();
         new CommandManager("MiaoChat", this);
-        L10N.getItemName(new ItemStack(Material.AIR));
+        L10N.getName(new ItemStack(Material.AIR));
     }
 
     @Override
