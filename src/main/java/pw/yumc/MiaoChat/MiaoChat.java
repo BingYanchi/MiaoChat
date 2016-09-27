@@ -14,7 +14,7 @@ import pw.yumc.YumCore.commands.CommandManager;
 import pw.yumc.YumCore.commands.annotation.Cmd;
 import pw.yumc.YumCore.commands.annotation.Help;
 import pw.yumc.YumCore.config.FileConfig;
-import pw.yumc.YumCore.misc.L10N;
+import pw.yumc.YumCore.global.L10N;
 
 public class MiaoChat extends JavaPlugin implements CommandExecutor {
     private FileConfig cfg;

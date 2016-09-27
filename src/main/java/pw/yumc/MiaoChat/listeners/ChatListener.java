@@ -27,7 +27,7 @@ import pw.yumc.MiaoChat.config.ChatRule;
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.bukkit.P;
 import pw.yumc.YumCore.bukkit.compatible.C;
-import pw.yumc.YumCore.misc.L10N;
+import pw.yumc.YumCore.global.L10N;
 import pw.yumc.YumCore.statistic.Statistics;
 import pw.yumc.YumCore.tellraw.Tellraw;
 import pw.yumc.YumCore.update.SubscribeTask;
