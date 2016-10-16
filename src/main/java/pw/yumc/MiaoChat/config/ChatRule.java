@@ -4,11 +4,12 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import pw.yumc.YumCore.config.Default;
-import pw.yumc.YumCore.config.InjectConfigurationSection;
+import pw.yumc.YumCore.config.annotation.Default;
+import pw.yumc.YumCore.config.inject.InjectConfigurationSection;
 
 /**
  * 聊天规则
@@ -17,7 +18,7 @@ import pw.yumc.YumCore.config.InjectConfigurationSection;
  * @author 喵♂呜
  */
 public class ChatRule extends InjectConfigurationSection {
-    private transient static final Pattern FORMAT_PATTERN = Pattern.compile("[\\[]([^\\[\\]]+)[\\]]");
+    private transient static Pattern FORMAT_PATTERN = Pattern.compile("[\\[]([^\\[\\]]+)[\\]]");
     private transient String name;
     @Default("50")
     private Integer index;
@@ -32,8 +33,9 @@ public class ChatRule extends InjectConfigurationSection {
     @Default("&6[&b%s&6]&r")
     private String itemformat;
     private transient LinkedList<String> formats;
+    private transient String lastColor;
 
-    public ChatRule(final String name, final ConfigurationSection config) {
+    public ChatRule(String name, ConfigurationSection config) {
         super(config);
         this.name = name;
         if (permission == null) {
@@ -41,9 +43,10 @@ public class ChatRule extends InjectConfigurationSection {
         }
         formats = new LinkedList<>();
         load();
+        lastColor = ChatColor.getLastColors(ChatColor.translateAlternateColorCodes('&', formats.getLast()));
     }
 
-    public boolean check(final Player player) {
+    public boolean check(Player player) {
         return player.hasPermission(permission);
     }
 
@@ -67,6 +70,10 @@ public class ChatRule extends InjectConfigurationSection {
         return itemformat;
     }
 
+    public String getLastColor() {
+        return lastColor;
+    }
+
     public String getName() {
         return name;
     }
@@ -84,15 +91,15 @@ public class ChatRule extends InjectConfigurationSection {
     }
 
     private void load() {
-        final Matcher m = FORMAT_PATTERN.matcher(format);
-        final LinkedList<String> temp = new LinkedList<>();
+        Matcher m = FORMAT_PATTERN.matcher(format);
+        LinkedList<String> temp = new LinkedList<>();
         while (m.find()) {
             temp.add(m.group(1));
         }
         String tempvar = format;
         if (!temp.isEmpty()) {
-            for (final String var : temp) {
-                final String[] args = tempvar.split("\\[" + var + "\\]", 2);
+            for (String var : temp) {
+                String[] args = tempvar.split("\\[" + var + "\\]", 2);
                 if (!"".equals(args[0])) {
                     formats.add(args[0]);
                 }

@@ -6,9 +6,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import pw.yumc.YumCore.config.ConfigNode;
-import pw.yumc.YumCore.config.InjectConfigurationSection;
-import pw.yumc.YumCore.config.Nullable;
+import pw.yumc.YumCore.config.annotation.ConfigNode;
+import pw.yumc.YumCore.config.annotation.Nullable;
+import pw.yumc.YumCore.config.inject.InjectConfigurationSection;
 import pw.yumc.YumCore.tellraw.Tellraw;
 
 public class ChatMessagePart extends InjectConfigurationSection {
@@ -23,20 +23,20 @@ public class ChatMessagePart extends InjectConfigurationSection {
     private String command;
     private transient CLICKTYPE type = CLICKTYPE.SUGGEST;
 
-    public ChatMessagePart(final ConfigurationSection config) {
+    public ChatMessagePart(ConfigurationSection config) {
         super(config);
         if (typestring != null) {
             type = CLICKTYPE.valueOf(typestring);
         }
     }
 
-    public Tellraw then(final Tellraw tr, final Player p) {
+    public Tellraw then(Tellraw tr, Player p) {
         tr.then(f(p, text));
         if (tip != null && !tip.isEmpty()) {
             tr.tip(f(p, tip));
         }
         if (command != null && !command.isEmpty()) {
-            final String tc = f(p, command);
+            String tc = f(p, command);
             switch (type) {
             case COMMAND:
                 tr.command(tc);
@@ -49,17 +49,16 @@ public class ChatMessagePart extends InjectConfigurationSection {
                 break;
             default:
                 break;
-
             }
         }
         return tr;
     }
 
-    private List<String> f(final Player player, final List<String> text) {
+    private List<String> f(Player player, List<String> text) {
         return PlaceholderAPI.setPlaceholders(player, text);
     }
 
-    private String f(final Player player, final String text) {
+    private String f(Player player, String text) {
         return PlaceholderAPI.setPlaceholders(player, text);
     }
 }

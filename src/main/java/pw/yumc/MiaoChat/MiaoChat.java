@@ -1,6 +1,7 @@
 package pw.yumc.MiaoChat;
 
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,11 +9,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.listeners.ChatListener;
 import pw.yumc.YumCore.bukkit.Log;
-import pw.yumc.YumCore.commands.CommandArgument;
-import pw.yumc.YumCore.commands.CommandExecutor;
 import pw.yumc.YumCore.commands.CommandManager;
 import pw.yumc.YumCore.commands.annotation.Cmd;
 import pw.yumc.YumCore.commands.annotation.Help;
+import pw.yumc.YumCore.commands.interfaces.CommandExecutor;
 import pw.yumc.YumCore.config.FileConfig;
 import pw.yumc.YumCore.global.L10N;
 
@@ -31,16 +31,16 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
 
     @Cmd(permission = "MiaoChat.toggle")
     @Help("关闭聊天功能")
-    public void off(final CommandArgument e) {
-        ChatListener.offList.add(e.getSender().getName());
-        Log.toSender(e.getSender(), "§c聊天功能已关闭!");
+    public void off(CommandSender sender) {
+        ChatListener.offList.add(sender.getName());
+        Log.toSender(sender, "§c聊天功能已关闭!");
     }
 
     @Cmd(permission = "MiaoChat.toggle")
     @Help("开启聊天功能")
-    public void on(final CommandArgument e) {
-        ChatListener.offList.remove(e.getSender().getName());
-        Log.toSender(e.getSender(), "§a聊天功能已开启!");
+    public void on(CommandSender sender) {
+        ChatListener.offList.remove(sender.getName());
+        Log.toSender(sender, "§a聊天功能已开启!");
     }
 
     @Override
@@ -58,9 +58,9 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
 
     @Cmd(permission = "MiaoChat.reload")
     @Help("重载配置文件")
-    public void reload(final CommandArgument e) {
+    public void reload(CommandSender sender) {
         cfg.reload();
         chatConfig.reload();
-        Log.toSender(e.getSender(), "§a配置文件已重载!");
+        Log.toSender(sender, "§a配置文件已重载!");
     }
 }
