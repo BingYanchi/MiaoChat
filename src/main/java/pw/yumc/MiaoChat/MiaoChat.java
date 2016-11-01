@@ -1,14 +1,17 @@
 package pw.yumc.MiaoChat;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.listeners.ChatListener;
 import pw.yumc.YumCore.bukkit.Log;
+import pw.yumc.YumCore.bukkit.compatible.C;
 import pw.yumc.YumCore.commands.CommandManager;
 import pw.yumc.YumCore.commands.annotation.Cmd;
 import pw.yumc.YumCore.commands.annotation.Help;
@@ -16,7 +19,7 @@ import pw.yumc.YumCore.commands.interfaces.CommandExecutor;
 import pw.yumc.YumCore.config.FileConfig;
 import pw.yumc.YumCore.global.L10N;
 
-public class MiaoChat extends JavaPlugin implements CommandExecutor {
+public class MiaoChat extends JavaPlugin implements CommandExecutor, PluginMessageListener {
     private FileConfig cfg;
     private ChatConfig chatConfig;
 
@@ -47,6 +50,8 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
     public void onEnable() {
         new ChatListener();
         new CommandManager("MiaoChat", this);
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.CHANNEL, this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.CHANNEL);
         L10N.getName(new ItemStack(Material.AIR));
     }
 
@@ -62,5 +67,22 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor {
         cfg.reload();
         chatConfig.reload();
         Log.toSender(sender, "§a配置文件已重载!");
+    }
+
+    public static void send(byte[] in) {
+        send(MiaoMessage.decode(in).getJson());
+    }
+
+    public static void send(String json) {
+        for (Player player : C.Player.getOnlinePlayers()) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + json);
+        }
+    }
+
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (MiaoMessage.CHANNEL.equals(channel)) {
+            send(message);
+        }
     }
 }

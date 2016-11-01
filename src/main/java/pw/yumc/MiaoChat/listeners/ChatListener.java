@@ -1,13 +1,6 @@
 package pw.yumc.MiaoChat.listeners;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,9 +11,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
-
-import me.clip.placeholderapi.PlaceholderAPI;
 import pw.yumc.MiaoChat.MiaoChat;
+import pw.yumc.MiaoChat.MiaoMessage;
 import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.config.ChatMessagePart;
 import pw.yumc.MiaoChat.config.ChatRule;
@@ -32,9 +24,15 @@ import pw.yumc.YumCore.statistic.Statistics;
 import pw.yumc.YumCore.tellraw.Tellraw;
 import pw.yumc.YumCore.update.SubscribeTask;
 
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ChatListener implements Listener {
     public static Set<String> offList = new HashSet<>();
     private static Pattern ITEM_PATTERN = Pattern.compile("%([i1-9]?)");
+
+    private final Queue<String> queue = new LinkedList<>();
 
     private MiaoChat plugin = P.getPlugin();
     private ChatConfig cc = plugin.getChatConfig();
@@ -43,6 +41,37 @@ public class ChatListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, P.instance);
         new Statistics();
         new SubscribeTask(true, true);
+    }
+
+    public void execute(final String commandList) {
+        execute(commandList, false);
+    }
+
+    public void execute(final String command, final boolean queued) {
+        final Iterator<? extends Player> it = C.Player.getOnlinePlayers().iterator();
+        if (it.hasNext()) {
+            final Player p = it.next();
+            p.sendPluginMessage(P.instance, MiaoMessage.CHANNEL, MiaoMessage.encode(command));
+        } else if (queued) {
+            queue.offer(command);
+        } else {
+            throw new RuntimeException("None player channel registered! Use queued");
+        }
+    }
+
+    private boolean processQueued() {
+        if (!queue.isEmpty()) {
+            final Iterator<? extends Player> it = C.Player.getOnlinePlayers().iterator();
+            if (!it.hasNext()) { return false; }
+            final Player p = it.next();
+            String command = queue.poll();
+            while (command != null) {
+                p.sendPluginMessage(P.instance, MiaoMessage.CHANNEL, MiaoMessage.encode(command));
+                command = queue.poll();
+            }
+            return true;
+        }
+        return false;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -123,7 +152,7 @@ public class ChatListener implements Listener {
     }
 
     private void handleSend(Player p, Tellraw tr, int range) {
-        Collection<? extends Entity> plist = Collections.emptyList();
+        Collection<? extends Entity> plist;
         if (range != 0) {
             plist = p.getNearbyEntities(range, range, range);
             tr.send(p);
@@ -139,9 +168,7 @@ public class ChatListener implements Listener {
     }
 
     private void handleTellraw(Player player, Tellraw tr, ChatRule cr, String message) {
-        if (message.isEmpty()) {
-            return;
-        }
+        if (message.isEmpty()) { return; }
         if (player.hasPermission("MiaoChat.color")) {
             message = ChatColor.translateAlternateColorCodes('&', message);
         }
