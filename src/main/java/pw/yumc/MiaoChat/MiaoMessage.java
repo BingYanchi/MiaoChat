@@ -10,6 +10,7 @@ import com.google.common.io.ByteStreams;
 public class MiaoMessage {
 
     public static final String CHANNEL = "MiaoChat";
+    public static final String NORMALCHANNEL = "MiaoChatNM";
     private String json;
 
     private MiaoMessage(String json) {
@@ -30,6 +31,7 @@ public class MiaoMessage {
     }
 
     public byte[] encode() {
+        if (json.getBytes().length > 32000) { return null; }
         final ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(json);
         return out.toByteArray();

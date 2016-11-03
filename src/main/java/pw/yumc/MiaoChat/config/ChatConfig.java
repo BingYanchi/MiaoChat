@@ -1,16 +1,11 @@
 package pw.yumc.MiaoChat.config;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import org.bukkit.entity.Player;
-
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.bukkit.P;
 import pw.yumc.YumCore.config.FileConfig;
+
+import java.util.*;
 
 /**
  *
@@ -24,14 +19,23 @@ public class ChatConfig {
     private LinkedList<ChatRule> rules;
     private FileConfig config;
     private FileConfig format;
+    private boolean BungeeCord;
 
     public ChatConfig() {
         config = P.getConfig();
+        BungeeCord = config.getBoolean("BungeeCord");
         format = new FileConfig("format.yml");
         rulecomp = new RuleComparator();
         formats = new HashMap<>();
         rules = new LinkedList<>();
         load();
+    }
+
+    /**
+     * @return 是否为BC模式
+     */
+    public boolean isBungeeCord() {
+        return BungeeCord;
     }
 
     /**
@@ -43,9 +47,7 @@ public class ChatConfig {
     public ChatRule getChatRule(Player player) {
         for (ChatRule cr : rules) {
             Log.debug(cr.getName());
-            if (cr.check(player)) {
-                return cr;
-            }
+            if (cr.check(player)) { return cr; }
         }
         return null;
     }

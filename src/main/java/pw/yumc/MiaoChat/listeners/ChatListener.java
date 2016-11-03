@@ -43,38 +43,7 @@ public class ChatListener implements Listener {
         new SubscribeTask(true, true);
     }
 
-    public void execute(final String commandList) {
-        execute(commandList, false);
-    }
-
-    public void execute(final String command, final boolean queued) {
-        final Iterator<? extends Player> it = C.Player.getOnlinePlayers().iterator();
-        if (it.hasNext()) {
-            final Player p = it.next();
-            p.sendPluginMessage(P.instance, MiaoMessage.CHANNEL, MiaoMessage.encode(command));
-        } else if (queued) {
-            queue.offer(command);
-        } else {
-            throw new RuntimeException("None player channel registered! Use queued");
-        }
-    }
-
-    private boolean processQueued() {
-        if (!queue.isEmpty()) {
-            final Iterator<? extends Player> it = C.Player.getOnlinePlayers().iterator();
-            if (!it.hasNext()) { return false; }
-            final Player p = it.next();
-            String command = queue.poll();
-            while (command != null) {
-                p.sendPluginMessage(P.instance, MiaoMessage.CHANNEL, MiaoMessage.encode(command));
-                command = queue.poll();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         ChatRule cr = cc.getChatRule(e.getPlayer());
@@ -158,8 +127,17 @@ public class ChatListener implements Listener {
             tr.send(p);
         } else {
             plist = C.Player.getOnlinePlayers();
+            if (cc.isBungeeCord()) {
+                byte[] mm = MiaoMessage.encode(tr.toJsonString());
+                if (mm == null) {
+                    p.sendPluginMessage(P.instance, MiaoMessage.NORMALCHANNEL, MiaoMessage.encode(tr.toOldMessageFormat()));
+                } else {
+                    p.sendPluginMessage(P.instance, MiaoMessage.CHANNEL, mm);
+                }
+            }
         }
         for (Entity ne : plist) {
+            // 此处必须进行强制转换 老版本服务器的Entity没有getName()
             if (ne instanceof Player && !offList.contains(((Player) ne).getName())) {
                 tr.send(ne);
             }

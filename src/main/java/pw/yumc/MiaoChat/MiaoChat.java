@@ -50,8 +50,13 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor, PluginMessa
     public void onEnable() {
         new ChatListener();
         new CommandManager("MiaoChat", this);
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.CHANNEL, this);
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.CHANNEL);
+        if (getChatConfig().isBungeeCord()) {
+            Log.info("已开启 BUngeeCord 模式!");
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.CHANNEL, this);
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.CHANNEL);
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.NORMALCHANNEL, this);
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.NORMALCHANNEL);
+        }
         L10N.getName(new ItemStack(Material.AIR));
     }
 
@@ -83,6 +88,10 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor, PluginMessa
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (MiaoMessage.CHANNEL.equals(channel)) {
             send(message);
+        } else if (MiaoMessage.NORMALCHANNEL.equals(channel)) {
+            for (Player p : C.Player.getOnlinePlayers()) {
+                p.sendMessage(MiaoMessage.decode(message).getJson());
+            }
         }
     }
 }
