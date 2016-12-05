@@ -18,7 +18,7 @@ import pw.yumc.YumCore.config.inject.InjectConfigurationSection;
  * @author 喵♂呜
  */
 public class ChatRule extends InjectConfigurationSection {
-    private transient static Pattern FORMAT_PATTERN = Pattern.compile("[\\[]([^\\[\\]]+)[\\]]");
+    private transient static Pattern FORMAT_PATTERN = Pattern.compile("[\\[]([^\\[\\]]+)[]]");
     private transient String name;
     @Default("50")
     private Integer index;
@@ -43,7 +43,7 @@ public class ChatRule extends InjectConfigurationSection {
         }
         formats = new LinkedList<>();
         load();
-        lastColor = ChatColor.getLastColors(ChatColor.translateAlternateColorCodes('&', formats.getLast()));
+        lastColor = ChatColor.getLastColors(ChatColor.translateAlternateColorCodes('&', formats.isEmpty() ? "§r" : formats.getLast()));
     }
 
     public boolean check(Player player) {
@@ -99,7 +99,7 @@ public class ChatRule extends InjectConfigurationSection {
         String tempvar = format;
         if (!temp.isEmpty()) {
             for (String var : temp) {
-                String[] args = tempvar.split("\\[" + var + "\\]", 2);
+                String[] args = tempvar.split("\\[" + var + "]", 2);
                 if (!"".equals(args[0])) {
                     formats.add(args[0]);
                 }

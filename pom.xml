@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>pw.yumc</groupId>
 	<artifactId>MiaoChat</artifactId>
-	<version>1.5</version>
+	<version>1.5.1</version>
 	<build>
 		<finalName>${project.name}</finalName>
 		<resources>
