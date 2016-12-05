@@ -41,9 +41,7 @@ public class ChatRule extends InjectConfigurationSection {
         if (permission == null) {
             permission = String.format("MiaoChat.%s", name);
         }
-        formats = new LinkedList<>();
         load();
-        lastColor = ChatColor.getLastColors(ChatColor.translateAlternateColorCodes('&', formats.isEmpty() ? "§r" : formats.getLast()));
     }
 
     public boolean check(Player player) {
@@ -91,24 +89,24 @@ public class ChatRule extends InjectConfigurationSection {
     }
 
     private void load() {
+        formats = new LinkedList<>();
         Matcher m = FORMAT_PATTERN.matcher(format);
         LinkedList<String> temp = new LinkedList<>();
         while (m.find()) {
             temp.add(m.group(1));
         }
         String tempvar = format;
-        if (!temp.isEmpty()) {
-            for (String var : temp) {
-                String[] args = tempvar.split("\\[" + var + "]", 2);
-                if (!"".equals(args[0])) {
-                    formats.add(args[0]);
-                }
-                formats.add(var);
-                tempvar = args[1];
+        for (String var : temp) {
+            String[] args = tempvar.split("\\[" + var + "]", 2);
+            if (!"".equals(args[0])) {
+                formats.add(args[0]);
             }
-            if (!tempvar.isEmpty()) {
-                formats.add(tempvar);
-            }
+            formats.add(var);
+            tempvar = args[1];
         }
+        if (!tempvar.isEmpty()) {
+            formats.add(tempvar);
+        }
+        lastColor = ChatColor.getLastColors(ChatColor.translateAlternateColorCodes('&', formats.isEmpty() ? "§r" : formats.getLast()));
     }
 }

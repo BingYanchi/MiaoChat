@@ -1,6 +1,9 @@
 package pw.yumc.MiaoChat.listeners;
 
-import me.clip.placeholderapi.PlaceholderAPI;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,6 +14,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
+
+import me.clip.placeholderapi.PlaceholderAPI;
 import pw.yumc.MiaoChat.MiaoChat;
 import pw.yumc.MiaoChat.MiaoMessage;
 import pw.yumc.MiaoChat.config.ChatConfig;
@@ -23,10 +28,6 @@ import pw.yumc.YumCore.global.L10N;
 import pw.yumc.YumCore.statistic.Statistics;
 import pw.yumc.YumCore.tellraw.Tellraw;
 import pw.yumc.YumCore.update.SubscribeTask;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ChatListener implements Listener {
     public static Set<String> offList = new HashSet<>();
@@ -52,8 +53,7 @@ public class ChatListener implements Listener {
             return;
         }
         e.setCancelled(true);
-        Tellraw tr = Tellraw.create();
-        handleChat(p, tr, cr, e.getMessage());
+        handleChat(p, Tellraw.create(), cr, e.getMessage());
     }
 
     private void handleChat(Player p, Tellraw tr, ChatRule cr, String message) {
@@ -76,7 +76,7 @@ public class ChatListener implements Listener {
                 tr.then(PlaceholderAPI.setPlaceholders(p, format));
             }
         }
-        return ChatColor.getLastColors(formats.getLast());
+        return ChatColor.getLastColors(formats.isEmpty() ? "§r" : formats.getLast());
     }
 
     private LinkedList<String> handleMessage(LinkedList<String> il, String message) {
