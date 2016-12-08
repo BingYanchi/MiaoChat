@@ -157,7 +157,7 @@ public class ChatListener implements Listener {
         LinkedList<String> il = handlePattern(message);
         // 如果返回null说明存在相同的物品
         if (il == null) {
-            Log.toSender(player, "§c不允许展示相同的物品!");
+            Log.sender(player, "§c不允许展示相同的物品!");
             return;
         }
         LinkedList<String> ml = handleMessage(il, message);

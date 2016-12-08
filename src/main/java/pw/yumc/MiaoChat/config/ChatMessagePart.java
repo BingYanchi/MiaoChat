@@ -39,16 +39,11 @@ public class ChatMessagePart extends InjectConfigurationSection {
             String tc = f(p, command);
             switch (type) {
             case COMMAND:
-                tr.command(tc);
-                break;
+                return tr.command(tc);
             case OPENURL:
-                tr.openurl(tc);
-                break;
+                return tr.openurl(tc);
             case SUGGEST:
-                tr.suggest(tc);
-                break;
-            default:
-                break;
+                return tr.suggest(tc);
             }
         }
         return tr;

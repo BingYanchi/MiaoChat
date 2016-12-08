@@ -8,18 +8,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+
 import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.listeners.ChatListener;
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.bukkit.compatible.C;
-import pw.yumc.YumCore.commands.CommandManager;
+import pw.yumc.YumCore.commands.CommandSub;
 import pw.yumc.YumCore.commands.annotation.Cmd;
 import pw.yumc.YumCore.commands.annotation.Help;
-import pw.yumc.YumCore.commands.interfaces.CommandExecutor;
+import pw.yumc.YumCore.commands.interfaces.Executor;
 import pw.yumc.YumCore.config.FileConfig;
 import pw.yumc.YumCore.global.L10N;
 
-public class MiaoChat extends JavaPlugin implements CommandExecutor, PluginMessageListener {
+public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListener {
     private FileConfig cfg;
     private ChatConfig chatConfig;
 
@@ -36,20 +37,20 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor, PluginMessa
     @Help("关闭聊天功能")
     public void off(CommandSender sender) {
         ChatListener.offList.add(sender.getName());
-        Log.toSender(sender, "§c聊天功能已关闭!");
+        Log.sender(sender, "§c聊天功能已关闭!");
     }
 
     @Cmd(permission = "MiaoChat.toggle")
     @Help("开启聊天功能")
     public void on(CommandSender sender) {
         ChatListener.offList.remove(sender.getName());
-        Log.toSender(sender, "§a聊天功能已开启!");
+        Log.sender(sender, "§a聊天功能已开启!");
     }
 
     @Override
     public void onEnable() {
         new ChatListener();
-        new CommandManager("MiaoChat", this);
+        new CommandSub("MiaoChat", this);
         if (getChatConfig().isBungeeCord()) {
             Log.info("已开启 BUngeeCord 模式!");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.CHANNEL, this);
@@ -71,7 +72,7 @@ public class MiaoChat extends JavaPlugin implements CommandExecutor, PluginMessa
     public void reload(CommandSender sender) {
         cfg.reload();
         chatConfig.reload();
-        Log.toSender(sender, "§a配置文件已重载!");
+        Log.sender(sender, "§a配置文件已重载!");
     }
 
     public static void send(byte[] in) {
