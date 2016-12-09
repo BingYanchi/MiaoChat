@@ -15,11 +15,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import pw.yumc.MiaoChat.MiaoChat;
 import pw.yumc.MiaoChat.MiaoMessage;
 import pw.yumc.MiaoChat.config.ChatConfig;
-import pw.yumc.MiaoChat.config.ChatMessagePart;
 import pw.yumc.MiaoChat.config.ChatRule;
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.bukkit.P;
@@ -53,30 +51,12 @@ public class ChatListener implements Listener {
             return;
         }
         e.setCancelled(true);
-        handleChat(p, Tellraw.create(), cr, e.getMessage());
+        handleChat(p, cr, e.getMessage());
     }
 
-    private void handleChat(Player p, Tellraw tr, ChatRule cr, String message) {
+    private void handleChat(Player p, ChatRule cr, String message) {
         // Log.d("玩家: %s 使用 %s 规则 解析 %s", p.getName(), cr.getName(), message);
-        handleFormat(p, tr, cr);
-        handleTellraw(p, tr, cr, message);
-        handleSend(p, tr, cr.getRange());
-    }
-
-    private String handleFormat(Player p, Tellraw tr, ChatRule cr) {
-        LinkedList<String> formats = cr.getFormats();
-        // Log.d("处理前缀信息...");
-        for (String format : formats) {
-            ChatMessagePart cmp = cc.getFormat(format);
-            if (cmp != null) {
-                // Log.d("解析格式: %s", format);
-                cmp.then(tr, p);
-            } else {
-                // Log.d("追加文本: %s", format);
-                tr.then(PlaceholderAPI.setPlaceholders(p, format));
-            }
-        }
-        return ChatColor.getLastColors(formats.isEmpty() ? "§r" : formats.getLast());
+        handleSend(p, handleTellraw(p, cr.create(p), cr, message), cr.getRange());
     }
 
     private LinkedList<String> handleMessage(LinkedList<String> il, String message) {
@@ -121,12 +101,16 @@ public class ChatListener implements Listener {
     }
 
     private void handleSend(Player p, Tellraw tr, int range) {
-        Collection<? extends Entity> plist;
+        List<Player> plist = new ArrayList<>();
         if (range != 0) {
-            plist = p.getNearbyEntities(range, range, range);
-            tr.send(p);
+            for (Entity ent : p.getNearbyEntities(range, range, range)) {
+                if (ent instanceof Player) {
+                    plist.add((Player) ent);
+                }
+            }
+            plist.add(p);
         } else {
-            plist = C.Player.getOnlinePlayers();
+            plist.addAll(C.Player.getOnlinePlayers());
             if (cc.isBungeeCord()) {
                 byte[] mm = MiaoMessage.encode(tr.toJsonString());
                 if (mm == null) {
@@ -136,29 +120,28 @@ public class ChatListener implements Listener {
                 }
             }
         }
-        for (Entity ne : plist) {
-            // 此处必须进行强制转换 老版本服务器的Entity没有getName()
-            if (ne instanceof Player && !offList.contains(((Player) ne).getName())) {
-                tr.send(ne);
+        for (Player player : plist) {
+            if (!offList.contains(player.getName())) {
+                tr.send(player);
             }
         }
         Bukkit.getConsoleSender().sendMessage(tr.toOldMessageFormat());
     }
 
-    private void handleTellraw(Player player, Tellraw tr, ChatRule cr, String message) {
-        if (message.isEmpty()) { return; }
+    private Tellraw handleTellraw(Player player, Tellraw tr, ChatRule cr, String message) {
+        if (message.isEmpty()) { return tr; }
         if (player.hasPermission("MiaoChat.color")) {
             message = ChatColor.translateAlternateColorCodes('&', message);
         }
         if (!cr.isItem()) {
             tr.then(message);
-            return;
+            return tr;
         }
         LinkedList<String> il = handlePattern(message);
         // 如果返回null说明存在相同的物品
         if (il == null) {
             Log.sender(player, "§c不允许展示相同的物品!");
-            return;
+            return tr;
         }
         LinkedList<String> ml = handleMessage(il, message);
         // Log.d("处理Tellraw格式...");
@@ -177,5 +160,6 @@ public class ChatListener implements Listener {
                 tr.then(cr.getLastColor() + mm);
             }
         }
+        return tr;
     }
 }

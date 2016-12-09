@@ -8,8 +8,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+import pw.yumc.MiaoChat.MiaoChat;
+import pw.yumc.YumCore.bukkit.P;
 import pw.yumc.YumCore.config.annotation.Default;
 import pw.yumc.YumCore.config.inject.InjectConfigurationSection;
+import pw.yumc.YumCore.tellraw.Tellraw;
 
 /**
  * 聊天规则
@@ -18,6 +22,8 @@ import pw.yumc.YumCore.config.inject.InjectConfigurationSection;
  * @author 喵♂呜
  */
 public class ChatRule extends InjectConfigurationSection {
+    private transient static MiaoChat plugin = P.getPlugin();
+    private transient static ChatConfig cc = plugin.getChatConfig();
     private transient static Pattern FORMAT_PATTERN = Pattern.compile("[\\[]([^\\[\\]]+)[]]");
     private transient String name;
     @Default("50")
@@ -86,6 +92,21 @@ public class ChatRule extends InjectConfigurationSection {
 
     public boolean isItem() {
         return item;
+    }
+
+    public Tellraw create(Player p) {
+        Tellraw tr = Tellraw.create();
+        for (String format : formats) {
+            ChatMessagePart cmp = cc.getFormats().get(format);
+            if (cmp != null) {
+                // Log.d("解析格式: %s", format);
+                cmp.then(tr, p);
+            } else {
+                // Log.d("追加文本: %s", format);
+                tr.then(PlaceholderAPI.setPlaceholders(p, format));
+            }
+        }
+        return tr;
     }
 
     private void load() {

@@ -1,11 +1,12 @@
 package pw.yumc.MiaoChat.config;
 
+import java.util.*;
+
 import org.bukkit.entity.Player;
+
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.bukkit.P;
 import pw.yumc.YumCore.config.FileConfig;
-
-import java.util.*;
 
 /**
  *
@@ -52,8 +53,8 @@ public class ChatConfig {
         return null;
     }
 
-    public ChatMessagePart getFormat(String name) {
-        return formats.get(name);
+    public Map<String, ChatMessagePart> getFormats() {
+        return formats;
     }
 
     public void load() {
