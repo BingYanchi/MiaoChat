@@ -2,6 +2,7 @@ package pw.yumc.MiaoChat.bungee;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
 
@@ -169,6 +170,9 @@ public class FileConfig {
     public FileConfig(Plugin plugin, String name) {
         this.file = new File(plugin.getDataFolder(), name);
         try {
+            if (!file.exists()) {
+                Files.copy(plugin.getResourceAsStream(name), file.toPath());
+            }
             this.config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
         } catch (IOException e) {
             Log.w("配置文件读取失败!");
