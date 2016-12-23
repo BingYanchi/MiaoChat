@@ -20,6 +20,7 @@ public class ChatConfig {
     private LinkedList<ChatRule> rules;
     private FileConfig config;
     private FileConfig format;
+    private String servername;
     private boolean BungeeCord;
 
     public ChatConfig() {
@@ -58,6 +59,7 @@ public class ChatConfig {
     }
 
     public void load() {
+        servername = config.getMessage("Server");
         formats.clear();
         for (String name : format.getKeys(false)) {
             formats.put(name, new ChatMessagePart(format.getConfigurationSection(name)));
@@ -71,6 +73,10 @@ public class ChatConfig {
             }
         }
         Collections.sort(rules, rulecomp);
+    }
+
+    public String getServername() {
+        return servername;
     }
 
     public void reload() {

@@ -12,16 +12,17 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import pw.yumc.MiaoChat.bungee.FileConfig;
+import pw.yumc.MiaoChat.bungee.Log;
 
 public class MiaoChatBungee extends Plugin implements Listener {
-    private Map<InetSocketAddress, Set<InetSocketAddress>> groups;
+    private Map<InetSocketAddress, Set<ServerInfo>> groups;
     private FileConfig config;
 
     @EventHandler
     public void handle(final PluginMessageEvent event) {
         if (event.getTag().equals(MiaoMessage.CHANNEL) || event.getTag().equals(MiaoMessage.NORMALCHANNEL)) {
             InetSocketAddress origin = event.getSender().getAddress();
-            for (ServerInfo server : getProxy().getServers().values()) {
+            for (ServerInfo server : groups.get(origin)) {
                 if (!server.getAddress().equals(origin) && server.getPlayers().size() > 0) {
                     server.sendData(event.getTag(), event.getData());
                 }
@@ -31,55 +32,57 @@ public class MiaoChatBungee extends Plugin implements Listener {
 
     @Override
     public void onLoad() {
+        Log.init(this);
         config = new FileConfig(this, "group.yml");
     }
 
     public void loadGroup() {
-        Map<String, InetSocketAddress> temp = new HashMap<>();
-        Set<InetSocketAddress> unused = new HashSet<>();
-        for (ServerInfo server : getProxy().getServers().values()) {
-            temp.put(server.getName(), server.getAddress());
-        }
+        groups = new HashMap<>();
+        Map<String, ServerInfo> temp = getProxy().getServers();
+        Set<ServerInfo> unused = new HashSet<>();
         Configuration groupSel = config.getSection("Groups");
         Collection<String> groupname = groupSel.getKeys();
         for (String gname : groupname) {
             Set<String> servers = new HashSet<>(groupSel.getStringList(gname));
-            Set<InetSocketAddress> serISA = new HashSet<>();
+            Set<ServerInfo> sers = new HashSet<>();
             for (String sname : servers) {
-                serISA.add(temp.get(sname));
+                sers.add(temp.get(sname));
             }
-            serISA.remove(null);
+            sers.remove(null);
             for (String sname : servers) {
-                InetSocketAddress isadd = temp.get(sname);
+                ServerInfo isadd = temp.get(sname);
                 if (isadd != null) {
                     unused.remove(isadd);
-                    groups.put(isadd, serISA);
+                    groups.put(isadd.getAddress(), sers);
                 }
             }
         }
-        for (InetSocketAddress unser : unused) {
-            groups.put(unser, unused);
+        for (ServerInfo unser : unused) {
+            groups.put(unser.getAddress(), unused);
         }
     }
 
     @Override
     public void onEnable() {
+        loadGroup();
         getProxy().registerChannel(MiaoMessage.CHANNEL);
         getProxy().registerChannel(MiaoMessage.NORMALCHANNEL);
         getProxy().getPluginManager().registerListener(this, this);
         getProxy().getPluginManager().registerCommand(this, new Command("MiaoChat", "MiaoChat.admin", "mct") {
             @Override
             public void execute(CommandSender commandSender, String[] args) {
-                if (args.length > 1) {
+                if (args.length > 0) {
                     switch (args[0].toLowerCase()) {
                     case "reload":
-                        onLoad();
-                        break;
+                        config.reload();
+                        loadGroup();
+                        commandSender.sendMessage("§a配置文件已重载!");
+                        return;
                     case "version":
-                        commandSender.sendMessage(getDescription().getVersion());
-                        break;
+                    default:
                     }
                 }
+                commandSender.sendMessage("§6插件版本: §av" + getDescription().getVersion());
             }
         });
         getLogger().info("注意: 通过BC转发的聊天信息将不会在控制台显示 仅客户端可见!");

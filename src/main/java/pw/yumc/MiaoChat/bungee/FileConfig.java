@@ -171,6 +171,9 @@ public class FileConfig {
         this.file = new File(plugin.getDataFolder(), name);
         try {
             if (!file.exists()) {
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
                 Files.copy(plugin.getResourceAsStream(name), file.toPath());
             }
             this.config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
@@ -191,7 +194,15 @@ public class FileConfig {
             Log.w("配置文件保存失败!");
             e.printStackTrace();
         }
+    }
 
+    public void reload() {
+        try {
+            this.config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+        } catch (IOException e) {
+            Log.w("配置文件读取失败!");
+            e.printStackTrace();
+        }
     }
 
 }

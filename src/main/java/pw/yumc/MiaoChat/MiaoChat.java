@@ -5,10 +5,19 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderHook;
 import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.listeners.ChatListener;
 import pw.yumc.YumCore.bukkit.Log;
@@ -20,9 +29,10 @@ import pw.yumc.YumCore.commands.interfaces.Executor;
 import pw.yumc.YumCore.config.FileConfig;
 import pw.yumc.YumCore.global.L10N;
 
-public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListener {
+public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListener, Listener {
     private FileConfig cfg;
     private ChatConfig chatConfig;
+    private String ServerName;
 
     public ChatConfig getChatConfig() {
         return chatConfig;
@@ -52,12 +62,27 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
         new ChatListener();
         new CommandSub("MiaoChat", this);
         if (getChatConfig().isBungeeCord()) {
-            Log.info("已开启 BUngeeCord 模式!");
+            Log.info("已开启 BungeeCord 模式!");
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            Bukkit.getPluginManager().registerEvents(this, this);
             Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.CHANNEL, this);
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.CHANNEL);
             Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.NORMALCHANNEL, this);
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.NORMALCHANNEL);
         }
+        PlaceholderAPI.registerPlaceholderHook("mct", new PlaceholderHook() {
+            @Override
+            public String onPlaceholderRequest(Player player, String s) {
+                switch (s.toLowerCase()) {
+                case "server":
+                    return getChatConfig().getServername();
+                case "bserver":
+                    return ServerName;
+                }
+                return "未知的参数";
+            }
+        });
         L10N.getName(new ItemStack(Material.AIR));
     }
 
@@ -85,6 +110,21 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
         }
     }
 
+    @EventHandler
+    public void onJoin(final PlayerJoinEvent e) {
+        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+            @Override
+            public void run() {
+                Player p = e.getPlayer();
+                if (p.isOnline()) {
+                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                    out.writeUTF("GetServer");
+                    p.sendPluginMessage(MiaoChat.this, "BungeeCord", out.toByteArray());
+                }
+            }
+        }, 10);
+    }
+
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (MiaoMessage.CHANNEL.equals(channel)) {
@@ -92,6 +132,20 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
         } else if (MiaoMessage.NORMALCHANNEL.equals(channel)) {
             for (Player p : C.Player.getOnlinePlayers()) {
                 p.sendMessage(MiaoMessage.decode(message).getJson());
+            }
+        } else if ("BungeeCord".equals(channel)) {
+            final ByteArrayDataInput input = ByteStreams.newDataInput(message);
+            if ("GetServer".equals(input.readUTF())) {
+                ServerName = input.readUTF();
+                Log.d("获取服务器名称: " + ServerName);
+                PlayerJoinEvent.getHandlerList().unregister((Listener) this);
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        Bukkit.getMessenger().unregisterIncomingPluginChannel(MiaoChat.this, "BungeeCord");
+                        Bukkit.getMessenger().unregisterOutgoingPluginChannel(MiaoChat.this, "BungeeCord");
+                    }
+                }, 20);
             }
         }
     }

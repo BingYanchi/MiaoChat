@@ -23,7 +23,6 @@ import pw.yumc.YumCore.tellraw.Tellraw;
  */
 public class ChatRule extends InjectConfigurationSection {
     private transient static MiaoChat plugin = P.getPlugin();
-    private transient static ChatConfig cc = plugin.getChatConfig();
     private transient static Pattern FORMAT_PATTERN = Pattern.compile("[\\[]([^\\[\\]]+)[]]");
     private transient String name;
     @Default("50")
@@ -97,7 +96,7 @@ public class ChatRule extends InjectConfigurationSection {
     public Tellraw create(Player p) {
         Tellraw tr = Tellraw.create();
         for (String format : formats) {
-            ChatMessagePart cmp = cc.getFormats().get(format);
+            ChatMessagePart cmp = plugin.getChatConfig().getFormats().get(format);
             if (cmp != null) {
                 // Log.d("解析格式: %s", format);
                 cmp.then(tr, p);
