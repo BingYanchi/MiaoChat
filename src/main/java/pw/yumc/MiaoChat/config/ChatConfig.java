@@ -1,6 +1,10 @@
 package pw.yumc.MiaoChat.config;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import org.bukkit.entity.Player;
 
@@ -48,7 +52,6 @@ public class ChatConfig {
      */
     public ChatRule getChatRule(Player player) {
         for (ChatRule cr : rules) {
-            Log.debug(cr.getName());
             if (cr.check(player)) { return cr; }
         }
         return null;

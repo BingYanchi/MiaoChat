@@ -62,7 +62,7 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
         new ChatListener();
         new CommandSub("MiaoChat", this);
         if (getChatConfig().isBungeeCord()) {
-            Log.info("已开启 BungeeCord 模式!");
+            Log.i("已开启 BungeeCord 模式!");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getPluginManager().registerEvents(this, this);
