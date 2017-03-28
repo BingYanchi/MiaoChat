@@ -1,13 +1,15 @@
 package pw.yumc.MiaoChat.listeners;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,14 +23,13 @@ import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.config.ChatRule;
 import pw.yumc.YumCore.bukkit.Log;
 import pw.yumc.YumCore.bukkit.P;
-import pw.yumc.YumCore.bukkit.compatible.C;
 import pw.yumc.YumCore.global.L10N;
 import pw.yumc.YumCore.statistic.Statistics;
 import pw.yumc.YumCore.tellraw.Tellraw;
 import pw.yumc.YumCore.update.SubscribeTask;
 
 public class ChatListener implements Listener {
-    public static Set<String> offList = new HashSet<>();
+    public static Set<Player> offList = new HashSet<>();
     private static Pattern ITEM_PATTERN = Pattern.compile("%([i1-9]?)");
 
     private final Queue<String> queue = new LinkedList<>();
@@ -50,13 +51,12 @@ public class ChatListener implements Listener {
             // Log.d("玩家: %s 未发现可用ChatRule!", p.getName());
             return;
         }
-        e.setCancelled(true);
-        handleChat(p, cr, e.getMessage());
+        handleChat(p, e.getRecipients(), cr, e.getMessage());
     }
 
-    private void handleChat(Player p, ChatRule cr, String message) {
+    private void handleChat(Player p, Set<Player> receive, ChatRule cr, String message) {
         // Log.d("玩家: %s 使用 %s 规则 解析 %s", p.getName(), cr.getName(), message);
-        handleSend(p, handleTellraw(p, cr.create(p), cr, message), cr.getRange());
+        handleSend(p, receive, handleTellraw(p, cr.create(p), cr, message), cr.getRange());
     }
 
     private LinkedList<String> handleMessage(LinkedList<String> il, String message) {
@@ -100,19 +100,16 @@ public class ChatListener implements Listener {
         return ilist;
     }
 
-    private void handleSend(Player p, Tellraw tr, int range) {
-        List<Player> plist = new ArrayList<>();
+    private void handleSend(Player p, Set<Player> receive, Tellraw tr, int range) {
+        Set<Player> plist = new HashSet<>();
         if (range != 0) {
-            for (Entity ent : p.getNearbyEntities(range, range, range)) {
-                if (ent instanceof Player) {
-                    plist.add((Player) ent);
-                }
-            }
+            p.getNearbyEntities(range, range, range).stream().filter(entity -> entity instanceof Player).forEach(entity -> plist.add((Player) entity));
             plist.add(p);
         } else {
-            plist.addAll(C.Player.getOnlinePlayers());
+            plist.addAll(receive);
             if (cc.isBungeeCord()) {
                 byte[] mm = MiaoMessage.encode(tr.toJsonString());
+                // 数据流等于NULL代表数据超长
                 if (mm == null) {
                     p.sendPluginMessage(P.instance, MiaoMessage.NORMALCHANNEL, MiaoMessage.encode(tr.toOldMessageFormat()));
                 } else {
@@ -120,11 +117,9 @@ public class ChatListener implements Listener {
                 }
             }
         }
-        for (Player player : plist) {
-            if (!offList.contains(player.getName())) {
-                tr.send(player);
-            }
-        }
+        receive.clear();
+        plist.removeAll(offList);
+        plist.forEach(tr::send);
         Bukkit.getConsoleSender().sendMessage(tr.toOldMessageFormat());
     }
 

@@ -1,7 +1,11 @@
 package pw.yumc.MiaoChat;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -22,11 +26,11 @@ public class MiaoChatBungee extends Plugin implements Listener {
     public void handle(final PluginMessageEvent event) {
         if (event.getTag().equals(MiaoMessage.CHANNEL) || event.getTag().equals(MiaoMessage.NORMALCHANNEL)) {
             InetSocketAddress origin = event.getSender().getAddress();
-            for (ServerInfo server : groups.get(origin)) {
+            groups.get(origin).forEach(server -> {
                 if (!server.getAddress().equals(origin) && server.getPlayers().size() > 0) {
                     server.sendData(event.getTag(), event.getData());
                 }
-            }
+            });
         }
     }
 
@@ -42,24 +46,20 @@ public class MiaoChatBungee extends Plugin implements Listener {
         Set<ServerInfo> unused = new HashSet<>();
         Configuration groupSel = config.getSection("Groups");
         Collection<String> groupname = groupSel.getKeys();
-        for (String gname : groupname) {
+        groupname.forEach(gname -> {
             Set<String> servers = new HashSet<>(groupSel.getStringList(gname));
             Set<ServerInfo> sers = new HashSet<>();
-            for (String sname : servers) {
-                sers.add(temp.get(sname));
-            }
+            servers.forEach(sname -> sers.add(temp.get(sname)));
             sers.remove(null);
-            for (String sname : servers) {
+            servers.forEach(sname -> {
                 ServerInfo isadd = temp.get(sname);
                 if (isadd != null) {
                     unused.remove(isadd);
                     groups.put(isadd.getAddress(), sers);
                 }
-            }
-        }
-        for (ServerInfo unser : unused) {
-            groups.put(unser.getAddress(), unused);
-        }
+            });
+        });
+        unused.forEach(unser -> groups.put(unser.getAddress(), unused));
     }
 
     @Override

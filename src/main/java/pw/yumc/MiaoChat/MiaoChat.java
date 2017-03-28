@@ -43,17 +43,17 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
         return cfg;
     }
 
-    @Cmd(permission = "MiaoChat.toggle")
+    @Cmd(permission = "MiaoChat.toggle", executor = Cmd.Executor.PLAYER)
     @Help("关闭聊天功能")
-    public void off(CommandSender sender) {
-        ChatListener.offList.add(sender.getName());
+    public void off(Player sender) {
+        ChatListener.offList.add(sender);
         Log.sender(sender, "§c聊天功能已关闭!");
     }
 
-    @Cmd(permission = "MiaoChat.toggle")
+    @Cmd(permission = "MiaoChat.toggle", executor = Cmd.Executor.PLAYER)
     @Help("开启聊天功能")
-    public void on(CommandSender sender) {
-        ChatListener.offList.remove(sender.getName());
+    public void on(Player sender) {
+        ChatListener.offList.remove(sender);
         Log.sender(sender, "§a聊天功能已开启!");
     }
 
@@ -61,6 +61,12 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
     public void onEnable() {
         new ChatListener();
         new CommandSub("MiaoChat", this);
+        enableBungeeCord();
+        hookPlaceholderAPI();
+        L10N.getName(new ItemStack(Material.AIR));
+    }
+
+    private void enableBungeeCord() {
         if (getChatConfig().isBungeeCord()) {
             Log.i("已开启 BungeeCord 模式!");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
@@ -71,6 +77,9 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
             Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.NORMALCHANNEL, this);
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.NORMALCHANNEL);
         }
+    }
+
+    private void hookPlaceholderAPI() {
         PlaceholderAPI.registerPlaceholderHook("mct", new PlaceholderHook() {
             @Override
             public String onPlaceholderRequest(Player player, String s) {
@@ -83,7 +92,6 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
                 return "未知的参数";
             }
         });
-        L10N.getName(new ItemStack(Material.AIR));
     }
 
     @Override
@@ -112,15 +120,12 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent e) {
-        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-            @Override
-            public void run() {
-                Player p = e.getPlayer();
-                if (p.isOnline()) {
-                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                    out.writeUTF("GetServer");
-                    p.sendPluginMessage(MiaoChat.this, "BungeeCord", out.toByteArray());
-                }
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            Player p = e.getPlayer();
+            if (p.isOnline()) {
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("GetServer");
+                p.sendPluginMessage(MiaoChat.this, "BungeeCord", out.toByteArray());
             }
         }, 10);
     }
@@ -139,12 +144,9 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
                 ServerName = input.readUTF();
                 Log.d("获取服务器名称: " + ServerName);
                 PlayerJoinEvent.getHandlerList().unregister((Listener) this);
-                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        Bukkit.getMessenger().unregisterIncomingPluginChannel(MiaoChat.this, "BungeeCord");
-                        Bukkit.getMessenger().unregisterOutgoingPluginChannel(MiaoChat.this, "BungeeCord");
-                    }
+                Bukkit.getScheduler().runTaskLater(this, () -> {
+                    Bukkit.getMessenger().unregisterIncomingPluginChannel(MiaoChat.this, "BungeeCord");
+                    Bukkit.getMessenger().unregisterOutgoingPluginChannel(MiaoChat.this, "BungeeCord");
                 }, 20);
             }
         }

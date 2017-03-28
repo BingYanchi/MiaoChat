@@ -95,7 +95,7 @@ public class ChatRule extends InjectConfigurationSection {
 
     public Tellraw create(Player p) {
         Tellraw tr = Tellraw.create();
-        for (String format : formats) {
+        formats.forEach(format -> {
             ChatMessagePart cmp = plugin.getChatConfig().getFormats().get(format);
             if (cmp != null) {
                 // Log.d("解析格式: %s", format);
@@ -104,7 +104,7 @@ public class ChatRule extends InjectConfigurationSection {
                 // Log.d("追加文本: %s", format);
                 tr.then(PlaceholderAPI.setPlaceholders(p, format));
             }
-        }
+        });
         return tr;
     }
 

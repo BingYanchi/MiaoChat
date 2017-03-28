@@ -1,6 +1,5 @@
 package pw.yumc.MiaoChat.config;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,7 +19,6 @@ import pw.yumc.YumCore.config.FileConfig;
 public class ChatConfig {
     private static String F = "Formats";
     private Map<String, ChatMessagePart> formats;
-    private RuleComparator rulecomp;
     private LinkedList<ChatRule> rules;
     private FileConfig config;
     private FileConfig format;
@@ -31,7 +29,6 @@ public class ChatConfig {
         config = P.getConfig();
         BungeeCord = config.getBoolean("BungeeCord");
         format = new FileConfig("format.yml");
-        rulecomp = new RuleComparator();
         formats = new HashMap<>();
         rules = new LinkedList<>();
         load();
@@ -64,18 +61,18 @@ public class ChatConfig {
     public void load() {
         servername = config.getMessage("Server");
         formats.clear();
-        for (String name : format.getKeys(false)) {
+        format.getKeys(false).forEach(name -> {
             formats.put(name, new ChatMessagePart(format.getConfigurationSection(name)));
             Log.d("载入聊天格式: %s", name);
-        }
+        });
         rules.clear();
         if (config.isSet(F)) {
-            for (String rule : config.getConfigurationSection(F).getKeys(false)) {
+            config.getConfigurationSection(F).getKeys(false).forEach(rule -> {
                 rules.add(new ChatRule(rule, config.getConfigurationSection(F + "." + rule)));
                 Log.d("载入聊天规则: %s => \"%s\"", rule, rules.getLast().getFormat());
-            }
+            });
         }
-        Collections.sort(rules, rulecomp);
+        rules.sort(Comparator.comparing(ChatRule::getIndex));
     }
 
     public String getServername() {
@@ -85,12 +82,5 @@ public class ChatConfig {
     public void reload() {
         format.reload();
         load();
-    }
-
-    private class RuleComparator implements Comparator<ChatRule> {
-        @Override
-        public int compare(ChatRule o1, ChatRule o2) {
-            return o1.getIndex().compareTo(o2.getIndex());
-        }
     }
 }
