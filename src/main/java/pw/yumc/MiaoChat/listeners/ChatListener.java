@@ -120,7 +120,6 @@ public class ChatListener implements Listener {
         receive.clear();
         plist.removeAll(offList);
         plist.forEach(tr::send);
-        Bukkit.getConsoleSender().sendMessage(tr.toOldMessageFormat());
     }
 
     private Tellraw handleTellraw(Player player, Tellraw tr, ChatRule cr, String message) {

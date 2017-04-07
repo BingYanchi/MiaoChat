@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>pw.yumc</groupId>
     <artifactId>MiaoChat</artifactId>
-    <version>1.8</version>
+    <version>1.8.1</version>
     <build>
         <finalName>${project.name}</finalName>
         <resources>
@@ -70,6 +70,12 @@
         <url>http://ci.yumc.pw/job/${project.artifactId}/</url>
     </ciManagement>
     <properties>
+        <update.description>§a正式版本 §b${project.version} §a版本</update.description>
+        <update.changes>
+            §617-04-07 §c修复: 控制台重复输出聊天信息;
+        </update.changes>
+        <update.changelog>
+        </update.changelog>
         <env.GIT_COMMIT>DEV</env.GIT_COMMIT>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
