@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>pw.yumc</groupId>
     <artifactId>MiaoChat</artifactId>
-    <version>1.8.1</version>
+    <version>1.8.2</version>
     <build>
         <finalName>${project.name}</finalName>
         <resources>
@@ -70,8 +70,9 @@
         <url>http://ci.yumc.pw/job/${project.artifactId}/</url>
     </ciManagement>
     <properties>
-        <update.description>§a正式版本 §b${project.version} §a版本</update.description>
+        <update.description>§a正式版本 §bv${project.version}</update.description>
         <update.changes>
+            §617-05-21 §c修复: BungeeCord未分配分组时报错;
             §617-04-07 §c修复: 控制台重复输出聊天信息;
         </update.changes>
         <update.changelog>

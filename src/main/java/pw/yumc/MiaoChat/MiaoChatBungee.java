@@ -26,11 +26,13 @@ public class MiaoChatBungee extends Plugin implements Listener {
     public void handle(final PluginMessageEvent event) {
         if (event.getTag().equals(MiaoMessage.CHANNEL) || event.getTag().equals(MiaoMessage.NORMALCHANNEL)) {
             InetSocketAddress origin = event.getSender().getAddress();
-            groups.get(origin).forEach(server -> {
-                if (!server.getAddress().equals(origin) && server.getPlayers().size() > 0) {
-                    server.sendData(event.getTag(), event.getData());
-                }
-            });
+            if (groups.containsKey(origin)) {
+                groups.get(origin).forEach(server -> {
+                    if (!server.getAddress().equals(origin) && server.getPlayers().size() > 0) {
+                        server.sendData(event.getTag(), event.getData());
+                    }
+                });
+            }
         }
     }
 
