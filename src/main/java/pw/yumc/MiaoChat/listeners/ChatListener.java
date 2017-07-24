@@ -40,7 +40,7 @@ public class ChatListener implements Listener {
     public ChatListener() {
         Bukkit.getPluginManager().registerEvents(this, P.instance);
         new Statistics();
-        new SubscribeTask(true, true);
+        new SubscribeTask(true, SubscribeTask.UpdateType.MAVEN);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
