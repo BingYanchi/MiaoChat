@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>pw.yumc</groupId>
     <artifactId>MiaoChat</artifactId>
-    <version>1.8.3</version>
+    <version>1.8.4</version>
     <build>
         <finalName>${project.name}</finalName>
         <resources>
@@ -70,8 +70,9 @@
         <url>http://ci.yumc.pw/job/${project.artifactId}/</url>
     </ciManagement>
     <properties>
-        <update.description>§a正式版本 §bv1.8.3</update.description>
+        <update.description>§a正式版本 §bv1.8.4</update.description>
         <update.changes>
+            §617-07-25 §c修复: 类库版本错误;
             §617-07-24 §c修复: 兼容 1.12 版本;
             §617-05-21 §c修复: BungeeCord未分配分组时报错;
             §617-04-07 §c修复: 控制台重复输出聊天信息;
@@ -101,7 +102,7 @@
             <groupId>pw.yumc</groupId>
             <artifactId>YumCore</artifactId>
             <type>jar</type>
-            <version>[1.8,)</version>
+            <version>[1.8.1,)</version>
         </dependency>
     </dependencies>
 </project>
