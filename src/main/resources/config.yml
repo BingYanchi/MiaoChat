@@ -1,5 +1,5 @@
 #配置文件版本号 请勿修改
-Version: 1.6
+Version: 1.8.5
 
 #BC跨服模式
 BungeeCord: true
@@ -7,7 +7,7 @@ BungeeCord: true
 Server: '§a生存服'
 #格式列表
 Formats:
-  #格式名称 对应当前文件夹下的default.yml
+  #格式名称
   default: 
     #优先级(将按照从小到大依次检测 比如 1-50 优先检测 1 符合则显示 不符合 检测 2 ...)
     index: 50
@@ -21,7 +21,7 @@ Formats:
     item: true
     #物品解析规则
     itemformat: '&6[&b%s&6]&r'
-  #格式名称 对应当前文件夹下的admin.yml
+  #格式名称
   admin: 
     #优先级(将按照从小到大依次检测 比如 1-50 优先检测 1 符合则显示 不符合 检测 2 ...)
     index: 49
