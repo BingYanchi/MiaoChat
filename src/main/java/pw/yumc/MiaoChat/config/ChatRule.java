@@ -18,8 +18,8 @@ import pw.yumc.YumCore.tellraw.Tellraw;
 /**
  * 聊天规则
  *
- * @since 2016年9月9日 下午4:59:47
  * @author 喵♂呜
+ * @since 2016年9月9日 下午4:59:47
  */
 public class ChatRule extends InjectConfigurationSection {
     private transient static MiaoChat plugin = P.getPlugin();
@@ -117,7 +117,7 @@ public class ChatRule extends InjectConfigurationSection {
         }
         String tempvar = format;
         for (String var : temp) {
-            String[] args = tempvar.split("\\[" + var + "]", 2);
+            String[] args = tempvar.split(Pattern.quote("[" + var + "]"), 2);
             if (!"".equals(args[0])) {
                 formats.add(args[0]);
             }

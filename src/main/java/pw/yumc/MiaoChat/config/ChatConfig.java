@@ -12,9 +12,8 @@ import pw.yumc.YumCore.bukkit.P;
 import pw.yumc.YumCore.config.FileConfig;
 
 /**
- *
- * @since 2016年9月9日 下午4:40:50
  * @author 喵♂呜
+ * @since 2016年9月9日 下午4:40:50
  */
 public class ChatConfig {
     private static String F = "Formats";
