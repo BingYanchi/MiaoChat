@@ -1,74 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>pw.yumc</groupId>
+
     <artifactId>MiaoChat</artifactId>
     <version>1.8.6</version>
-    <build>
-        <finalName>${project.name}</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <minimizeJar>true</minimizeJar>
-                            <artifactSet>
-                                <includes>
-                                    <include>pw.yumc:YumCore</include>
-                                </includes>
-                            </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>pw.yumc.YumCore</pattern>
-                                    <shadedPattern>${project.groupId}.${project.artifactId}</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>proguard</goal>
-                        </goals>
-                        <configuration>
-                            <options>
-                                <option>-repackageclasses \ʼ.ʽ.ʾ.${project.artifactId}</option>
-                                <option>-keep class ${project.groupId}.${project.artifactId}.${project.artifactId}</option>
-                                <option>-keep class ${project.groupId}.${project.artifactId}.${project.artifactId}Bungee</option>
-                            </options>
-                            <libs>
-                                <lib>${java.home}/lib/rt.jar</lib>
-                            </libs>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-    <ciManagement>
-        <system>Jenkins</system>
-        <url>http://ci.yumc.pw/job/${project.artifactId}/</url>
-    </ciManagement>
+
+    <parent>
+        <groupId>pw.yumc</groupId>
+        <artifactId>minecraft-plugin-parent</artifactId>
+        <version>1.0</version>
+        <relativePath/>
+    </parent>
+
     <properties>
         <update.description>§a正式版本 §bv1.8.6</update.description>
         <update.changes>
@@ -85,25 +28,4 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    <repositories>
-        <repository>
-            <id>yumc-repo</id>
-            <url>http://repo.yumc.pw/content/groups/public/</url>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <repository>
-            <id>jtb</id>
-            <name>YUMC</name>
-            <url>http://repo.yumc.pw/content/repositories/yumcenter/</url>
-        </repository>
-    </distributionManagement>
-    <dependencies>
-        <dependency>
-            <groupId>pw.yumc</groupId>
-            <artifactId>YumCore</artifactId>
-            <type>jar</type>
-            <version>[1.8.1,)</version>
-        </dependency>
-    </dependencies>
 </project>
