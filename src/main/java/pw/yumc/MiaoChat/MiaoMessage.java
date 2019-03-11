@@ -9,8 +9,8 @@ import com.google.common.io.ByteStreams;
  */
 public class MiaoMessage {
 
-    public static final String CHANNEL = "MiaoChat";
-    public static final String NORMALCHANNEL = "MiaoChatNM";
+    public static final String CHANNEL = "MiaoChat:MiaoChat".toLowerCase();
+    public static final String NORMALCHANNEL = "MiaoChat:MiaoChatNM".toLowerCase();
     private String json;
 
     private MiaoMessage(String json) {

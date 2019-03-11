@@ -1,5 +1,6 @@
 # Eclipse stuff
 /.settings
+/.project
 
 # netbeans
 /nbproject

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>MiaoChat</artifactId>
-    <version>1.8.6</version>
+    <version>1.8.7</version>
 
     <parent>
         <groupId>pw.yumc</groupId>
@@ -13,15 +13,16 @@
     </parent>
 
     <properties>
-        <update.description>§a正式版本 §bv1.8.6</update.description>
+        <update.description>§a正式版本 §bv1.8.7 §a兼容 Spigot 1.13.2</update.description>
         <update.changes>
+            §619-02-23 §c修复: BungeeCord 兼容性问题;
+        </update.changes>
+        <update.changelog>
             §617-08-08 §c修复: 解析特殊字符错误问题;
             §617-07-25 §c修复: 类库版本错误;
             §617-07-24 §c修复: 兼容 1.12 版本;
             §617-05-21 §c修复: BungeeCord未分配分组时报错;
             §617-04-07 §c修复: 控制台重复输出聊天信息;
-        </update.changes>
-        <update.changelog>
         </update.changelog>
         <env.GIT_COMMIT>DEV</env.GIT_COMMIT>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
