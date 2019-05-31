@@ -15,7 +15,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderHook;
 import pw.yumc.MiaoChat.config.ChatConfig;
@@ -74,8 +73,8 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
             Bukkit.getPluginManager().registerEvents(this, this);
             Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.CHANNEL, this);
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.CHANNEL);
-            Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.NORMALCHANNEL, this);
-            Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.NORMALCHANNEL);
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, MiaoMessage.NORMAL_CHANNEL, this);
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, MiaoMessage.NORMAL_CHANNEL);
         }
     }
 
@@ -88,6 +87,7 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
                     return getChatConfig().getServername();
                 case "bserver":
                     return ServerName;
+                    default:
                 }
                 return "未知的参数";
             }
@@ -134,7 +134,7 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (MiaoMessage.CHANNEL.equals(channel)) {
             send(message);
-        } else if (MiaoMessage.NORMALCHANNEL.equals(channel)) {
+        } else if (MiaoMessage.NORMAL_CHANNEL.equals(channel)) {
             for (Player p : C.Player.getOnlinePlayers()) {
                 p.sendMessage(MiaoMessage.decode(message).getJson());
             }

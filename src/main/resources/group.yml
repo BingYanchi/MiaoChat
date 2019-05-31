@@ -7,9 +7,9 @@ Version: 1.0
 Groups:
   #普通分组
   normal:
-  - 'sc1'
-  - 'sc2'
+  #  - 'sc1'
+  #  - 'sc2'
   #游戏分组
   games:
-  - 'bw1'
-  - 'sg1'
+#  - 'bw1'
+#  - 'sg1'

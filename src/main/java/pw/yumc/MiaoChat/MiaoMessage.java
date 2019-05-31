@@ -1,16 +1,24 @@
 package pw.yumc.MiaoChat;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import lombok.SneakyThrows;
 
 /**
  * Created on 16-9-8.
+ * @author MiaoWoo
  */
 public class MiaoMessage {
 
-    public static final String CHANNEL = "MiaoChat:MiaoChat".toLowerCase();
-    public static final String NORMALCHANNEL = "MiaoChat:MiaoChatNM".toLowerCase();
+    public static final String CHANNEL = "MiaoChat:Default".toLowerCase();
+    public static final String NORMAL_CHANNEL = "MiaoChat:Normal".toLowerCase();
+    private static final int MAX_MESSAGE_LENGTH = 32000;
     private String json;
 
     private MiaoMessage(String json) {
@@ -21,19 +29,33 @@ public class MiaoMessage {
         return new MiaoMessage(in).encode();
     }
 
+    @SneakyThrows
     public static MiaoMessage decode(byte[] in) {
-        final ByteArrayDataInput input = ByteStreams.newDataInput(in);
-        return new MiaoMessage(input.readUTF());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        copy(new GZIPInputStream(new ByteArrayInputStream(in)), baos);
+        return new MiaoMessage(baos.toString("UTF-8"));
     }
 
     public String getJson() {
         return json;
     }
 
+    @SneakyThrows
     public byte[] encode() {
-        if (json.getBytes().length > 32000) { return null; }
-        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(json);
-        return out.toByteArray();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        copy(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)), new GZIPOutputStream(baos));
+        if (baos.size() > MAX_MESSAGE_LENGTH) { return null; }
+        return baos.toByteArray();
+    }
+
+    @SneakyThrows
+    private static void copy(InputStream input, OutputStream output) {
+        byte[] buffer = new byte[1024];
+        int n;
+        while ((n = input.read(buffer)) != -1) {
+            output.write(buffer, 0, n);
+        }
+        input.close();
+        output.close();
     }
 }

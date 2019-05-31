@@ -28,6 +28,9 @@ import pw.yumc.YumCore.statistic.Statistics;
 import pw.yumc.YumCore.tellraw.Tellraw;
 import pw.yumc.YumCore.update.SubscribeTask;
 
+/**
+ * @author MiaoWoo
+ */
 public class ChatListener implements Listener {
     public static Set<Player> offList = new HashSet<>();
     private static Pattern ITEM_PATTERN = Pattern.compile("%([i1-9]?)");
@@ -111,7 +114,7 @@ public class ChatListener implements Listener {
                 byte[] mm = MiaoMessage.encode(tr.toJsonString());
                 // 数据流等于NULL代表数据超长
                 if (mm == null) {
-                    p.sendPluginMessage(P.instance, MiaoMessage.NORMALCHANNEL, MiaoMessage.encode(tr.toOldMessageFormat()));
+                    p.sendPluginMessage(P.instance, MiaoMessage.NORMAL_CHANNEL, MiaoMessage.encode(tr.toOldMessageFormat()));
                 } else {
                     p.sendPluginMessage(P.instance, MiaoMessage.CHANNEL, mm);
                 }
