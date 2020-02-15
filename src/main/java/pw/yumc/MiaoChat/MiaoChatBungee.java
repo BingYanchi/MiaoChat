@@ -56,6 +56,11 @@ public class MiaoChatBungee extends Plugin implements Listener {
                 if (temp.containsKey(s)) {
                     ServerInfo serverInfo = temp.get(s);
                     unused.remove(serverInfo);
+                    servers.forEach(ss -> {
+                        if (temp.containsKey(ss) && !ss.equals(s)) {
+                            serverInfos.add(temp.get(ss));
+                        }
+                    });
                     groups.put(serverInfo.getAddress(), serverInfos);
                 }
             });
