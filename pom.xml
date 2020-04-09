@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>MiaoChat</artifactId>
-    <version>1.9.0</version>
+    <version>1.9.1</version>
 
     <parent>
         <groupId>pw.yumc</groupId>
@@ -13,8 +13,9 @@
     </parent>
 
     <properties>
-        <update.description>§a正式版本 §bv1.9.0 §a兼容 Spigot 1.15.2</update.description>
+        <update.description>§a正式版本 §bv1.9.1 §a兼容 Spigot 1.15.2</update.description>
         <update.changes>
+            §620-04-10 §c修复: L10N 本地化组件报错的问题;
             §620-04-09 §c修复: 1.13-1.15.2新增物品不兼容的问题;
             §620-02-15 §c修复: 跨服分组分配异常的问题;
             §619-05-31 §a增强: 跨服聊天压缩数据 增加可传输内容大小;
