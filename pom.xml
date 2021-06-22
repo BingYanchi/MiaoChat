@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>MiaoChat</artifactId>
-    <version>1.9.2</version>
+    <version>1.9.3</version>
 
     <parent>
         <groupId>pw.yumc</groupId>
@@ -13,17 +13,18 @@
     </parent>
 
     <properties>
-        <update.description>§a正式版本 §bv1.9.2 §a兼容 Spigot 1.16.3</update.description>
+        <update.description>§a正式版本 §bv1.9.3 §b兼容 1.17 版本</update.description>
         <update.changes>
+            §621-06-20 §a增强: 兼容 1.17 版本;
             §620-10-10 §c修复: 1.16.3聊天包格式调整的问题;
             §620-04-10 §c修复: L10N 本地化组件报错的问题;
             §620-04-09 §c修复: 1.13-1.15.2新增物品不兼容的问题;
-            §620-02-15 §c修复: 跨服分组分配异常的问题;
+            §620-02-15 §c修复: 跨服分组分配异常的问题
+        </update.changes>
+        <update.changelog>
             §619-05-31 §a增强: 跨服聊天压缩数据 增加可传输内容大小;
             §619-05-29 §c修复: 1.7.10不兼容的问题;
             §619-02-23 §c修复: BungeeCord 兼容性问题;
-        </update.changes>
-        <update.changelog>
             §617-08-08 §c修复: 解析特殊字符错误问题;
             §617-07-25 §c修复: 类库版本错误;
             §617-07-24 §c修复: 兼容 1.12 版本;
@@ -31,9 +32,6 @@
             §617-04-07 §c修复: 控制台重复输出聊天信息;
         </update.changelog>
         <env.GIT_COMMIT>DEV</env.GIT_COMMIT>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <build>
         <plugins>
