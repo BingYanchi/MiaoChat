@@ -1,11 +1,5 @@
 package pw.yumc.MiaoChat;
 
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -16,6 +10,12 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import pw.yumc.MiaoChat.bungee.FileConfig;
 import pw.yumc.MiaoChat.bungee.Log;
+
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author MiaoWoo
@@ -49,21 +49,20 @@ public class MiaoChatBungee extends Plugin implements Listener {
         Map<String, ServerInfo> temp = getProxy().getServers();
         Set<ServerInfo> unused = new HashSet<>(temp.values());
         Configuration groupSel = config.getSection("Groups");
+        // 读取所有的分组名称
         groupSel.getKeys().forEach(groupName -> {
+            // 获取每个分组的服务器名称
             Set<String> servers = new HashSet<>(groupSel.getStringList(groupName));
+            // 新建当前分组数组
             Set<ServerInfo> serverInfos = new HashSet<>();
             servers.forEach(s -> {
                 if (temp.containsKey(s)) {
-                    ServerInfo serverInfo = temp.get(s);
-                    unused.remove(serverInfo);
-                    servers.forEach(ss -> {
-                        if (temp.containsKey(ss) && !ss.equals(s)) {
-                            serverInfos.add(temp.get(ss));
-                        }
-                    });
-                    groups.put(serverInfo.getAddress(), serverInfos);
+                    ServerInfo info = temp.get(s);
+                    unused.remove(info);
+                    serverInfos.add(info);
                 }
             });
+            serverInfos.forEach(serverInfo -> groups.put(serverInfo.getAddress(), serverInfos));
         });
         unused.forEach(serverInfo -> groups.put(serverInfo.getAddress(), unused));
     }

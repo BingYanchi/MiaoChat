@@ -1,5 +1,9 @@
 package pw.yumc.MiaoChat;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -11,12 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.PlaceholderHook;
+import org.jetbrains.annotations.NotNull;
 import pw.yumc.MiaoChat.config.ChatConfig;
 import pw.yumc.MiaoChat.listeners.ChatListener;
 import pw.yumc.YumCore.bukkit.Log;
@@ -32,6 +31,7 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
     private FileConfig cfg;
     private ChatConfig chatConfig;
     private String ServerName;
+    private PlaceholderExpansion expansion;
 
     public ChatConfig getChatConfig() {
         return chatConfig;
@@ -65,6 +65,11 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
         L10N.getName(new ItemStack(Material.AIR));
     }
 
+    @Override
+    public void onDisable() {
+        this.expansion.unregister();
+    }
+
     private void enableBungeeCord() {
         if (getChatConfig().isBungeeCord()) {
             Log.i("已开启 BungeeCord 模式!");
@@ -79,19 +84,40 @@ public class MiaoChat extends JavaPlugin implements Executor, PluginMessageListe
     }
 
     private void hookPlaceholderAPI() {
-        PlaceholderAPI.registerPlaceholderHook("mct", new PlaceholderHook() {
+        this.expansion = new PlaceholderExpansion() {
             @Override
-            public String onPlaceholderRequest(Player player, String s) {
-                switch (s.toLowerCase()) {
-                case "server":
-                    return getChatConfig().getServername();
-                case "bserver":
-                    return ServerName;
+            public @NotNull String getIdentifier() {
+                return "mct";
+            }
+
+            @Override
+            public @NotNull String getAuthor() {
+                return "MiaoWoo";
+            }
+
+            @Override
+            public @NotNull String getVersion() {
+                return "1.0";
+            }
+
+            @Override
+            public boolean persist() {
+                return true;
+            }
+
+            @Override
+            public String onPlaceholderRequest(Player player, @NotNull String params) {
+                switch (params.toLowerCase()) {
+                    case "server":
+                        return getChatConfig().getServername();
+                    case "bserver":
+                        return ServerName;
                     default:
                 }
                 return "未知的参数";
             }
-        });
+        };
+        this.expansion.register();
     }
 
     @Override

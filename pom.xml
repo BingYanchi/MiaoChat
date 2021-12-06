@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>MiaoChat</artifactId>
-    <version>1.9.3</version>
+    <version>1.9.5</version>
 
     <parent>
         <groupId>pw.yumc</groupId>
@@ -13,8 +13,9 @@
     </parent>
 
     <properties>
-        <update.description>§a正式版本 §bv1.9.3 §b兼容 1.17 版本</update.description>
+        <update.description>§a正式版本 §bv1.9.5 §b兼容 1.15 版本</update.description>
         <update.changes>
+            §621-06-20 §a增强: 兼容 1.18 版本 兼容新版PAPI;
             §621-06-20 §a增强: 兼容 1.17 版本;
             §620-10-10 §c修复: 1.16.3聊天包格式调整的问题;
             §620-04-10 §c修复: L10N 本地化组件报错的问题;
